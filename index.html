@@ -57,14 +57,6 @@
     /* 视频固定 16:9 */
     .video-container{position:relative;width:100%;max-width:720px;margin:auto;border-radius:var(--radius);overflow:hidden}
     .video-container video{width:100%;height:auto;display:block;border-radius:var(--radius);outline:none}
-    .video-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 100%;
-      max-width: 960px;
-      margin: 0 auto;
-    }
 
     /* 海报两列 */
     .poster-row{display:flex;gap:1rem;flex-wrap:wrap}
@@ -119,10 +111,8 @@
 <!-- 本地视频 -->
 <section id="about">
   <h2>关于我们</h2>
-  <div class="video-container" style="max-width: 960px; margin: 0 auto;">
-    <div style="position: relative; width: 100%; padding-top: 56.25%;">
-      <iframe src="//player.bilibili.com/player.html?aid=375588815&bvid=BV1so4y1m7U5&cid=339262048&page=1&high_quality=1&danmaku=0" allowfullscreen="allowfullscreen" width="100%" height="500" scrolling="no" frameborder="0" sandbox="allow-top-navigation allow-same-origin allow-forms allow-scripts"></iframe>
-    </div>
+  <div class="video-container">
+    <video controls preload="metadata" src="assets/videos/Promotional video.mp4"></video>
   </div>
   <p style="margin-top:1rem;text-align:center;">揭阳第一中学数模队官方宣传片</p>
 
@@ -157,9 +147,9 @@
 </section>
 
 
-<!-- 队干风采（16人全员，3D翻转卡片） -->
+<!-- 队干风采（17人全员，3D翻转卡片） -->
 <section id="team">
-  <h2>队干风采（点击或鼠标放上去有惊喜）</h2>
+  <h2>队干风采</h2>
   <div class="team-grid" id="team-grid"></div>
 </section>
 
@@ -249,8 +239,4 @@ document.querySelector('.scroll-hint').addEventListener('click',()=>{
 });
 </script>
 </body>
-
 </html>
-
-
-
