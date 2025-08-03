@@ -77,6 +77,7 @@
     <a href="#poster">宣传海报</a>
     <a href="#events">品牌活动</a>
     <a href="#team">队干风采</a>
+    <a href="#awards">荣誉</a>
     <a href="#rules">队规</a>
     <a href="#join">加入我们</a>
   </nav>
@@ -151,6 +152,59 @@
 <section id="team">
   <h2>队干风采</h2>
   <div class="team-grid" id="team-grid"></div>
+</section>
+
+<!-- 奖状 -->
+<section id="awards">
+  <h2>荣誉（鼠标点按有惊喜）</h2>
+  <div class="container">
+    <div class="card" style="--i:-2.5"><img src="assets/images/awards/林宏伟   能力测试一等奖.jpg" alt="国家级一等奖" style="width:100%;height:100%;object-fit:cover;"></div>
+    <div class="card" style="--i:-1.5"><img src="assets/images/awards/林宏伟   综合二等奖.jpg" alt="国家级二等奖" style="width:100%;height:100%;object-fit:cover;"></div>
+    <div class="card" style="--i:-0.5"><img src="assets/images/awards/王梓泰   能力测试二等奖.png" alt="国家级二等奖" style="width:100%;height:100%;object-fit:cover;"></div>
+    <div class="card" style="--i:0.5"><img src="assets/images/awards/王梓泰、林宏伟   论文二等奖.jpg" alt="国家级二等奖" style="width:100%;height:100%;object-fit:cover;"></div>
+    <div class="card" style="--i:1.5"><img src="assets/images/awards/王梓泰   综合二等奖.png" alt="国家级二等奖" style="width:100%;height:100%;object-fit:cover;"></div>
+    <div class="card" style="--i:2.5"><img src="assets/images/awards/谢柯烁、郑思佳、陈平浩   论文三等奖.jpg" alt="国家级三等奖" style="width:100%;height:100%;object-fit:cover;"></div>
+  </div>
+  <style>
+    .container .card{
+      position: absolute;
+      width: 362px;
+      height: 259.4px;
+      background-color: #5e5cfc;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: rgba(0, 0, 0, 1);
+      font-size: 8em;
+      font-weight: 700;
+      border: 10px solid rgba(0, 0, 0, .1);
+      transition: .5s;
+      transform-origin: 50% 100%;
+      filter: hue-rotate(calc(var(--i) * 60deg));
+      box-shadow: 0 15px 50px rgba(0, 0, 0, .1);
+    }
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 400px;
+    }
+    .container:hover .card{
+      transform: rotate(calc(var(--i) * 5deg))
+                 translate(calc(var(--i) * 120px), -50px);
+      box-shadow: 0 15px 50px rgba(0, 0, 0, .25);
+      color: rgba(0, 0, 0, .25);
+      cursor: pointer;
+    }
+    .container:active .card:not(:active){
+      background-color: #333;
+    }
+    .container .card:active{
+      translate: calc(var(--i) * 20px)-50px;
+      z-index: 999;
+    }
+  </style>
 </section>
 
 <!-- 队规 -->
