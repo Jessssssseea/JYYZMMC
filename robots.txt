@@ -1,0 +1,91 @@
+# robots.txt
+# 揭阳第一中学数模队官网
+# 部署地址：https://jessssssseea.github.io/JYYZMMC/
+# 更新时间：2025-08-08
+# 功能说明：对所有友好爬虫开放全部公开资源，提高收录概率；
+#          仅屏蔽无意义的系统目录、缓存目录及隐私文件。
+
+# ======================
+# 通用规则（所有爬虫）
+# ======================
+User-agent: *
+Allow: /
+
+# 禁止抓取 GitHub Pages 系统目录
+Disallow: /.git/
+Disallow: /.github/
+Disallow: /.well-known/
+
+# 禁止抓取常见临时或日志目录
+Disallow: /tmp/
+Disallow: /cache/
+Disallow: /logs/
+Disallow: /cgi-bin/
+
+# 禁止抓取带查询参数的动态地址（避免重复内容）
+Disallow: /*?*
+
+# 禁止直接抓取压缩包、PDF、备份文件
+Disallow: /*.zip$
+Disallow: /*.tar.gz$
+Disallow: /*.rar$
+Disallow: /*.pdf$
+Disallow: /*.sql$
+Disallow: /*.log$
+Disallow: /*.bak$
+Disallow: /*~$
+
+# 允许抓取 CSS、JS、SVG、字体、图片等前端资源
+Allow: /*.css
+Allow: /*.js
+Allow: /*.svg
+Allow: /*.woff2
+Allow: /*.png
+Allow: /*.jpg
+Allow: /*.jpeg
+Allow: /*.gif
+Allow: /*.webp
+Allow: /assets/
+
+# ======================
+# 百度 Baiduspider
+# ======================
+User-agent: Baiduspider
+Allow: /
+Crawl-delay: 1
+Disallow: /.git/
+Disallow: /*?*
+
+# ======================
+# 谷歌 Googlebot
+# ======================
+User-agent: Googlebot
+Allow: /
+Disallow: /.git/
+Disallow: /*?*
+
+# 图片搜索单独允许
+User-agent: Googlebot-Image
+Allow: /assets/images/
+
+# ======================
+# 必应 Bingbot
+# ======================
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+Disallow: /.git/
+Disallow: /*?*
+
+# ======================
+# 其他主流爬虫
+# ======================
+User-agent: Sogou web spider
+Allow: /
+Disallow: /.git/
+Disallow: /*?*
+
+User-agent: 360Spider
+Allow: /
+Disallow: /.git/
+Disallow: /*?*
