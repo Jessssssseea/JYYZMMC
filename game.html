@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+    <title>奇点监狱·AI失控 · 揭阳第一中学数模队</title>
+    <meta name="description" content="揭阳一中数模队自研AI伦理游戏——奇点监狱·AI失控。将数学建模与AI深度融合，用游戏讲述失控的寓言。免费下载Windows版。"/>
+    <link rel="icon" href="assets/images/logo.png"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-root: #06080d;
+            --bg-surface: #0f1420;
+            --bg-card: rgba(20, 27, 40, 0.92);
+            --bg-elevated: #1a2238;
+            --accent-primary: #5b9bd5;
+            --accent-glow: #7bb8e8;
+            --accent-red: #e0556a;
+            --accent-orange: #e8a85f;
+            --accent-purple: #b78ce6;
+            --accent-pink: #e8739a;
+            --text-primary: #e6ecf3;
+            --text-secondary: #9aa9bb;
+            --text-muted: #5e6d7e;
+            --border-subtle: rgba(255, 255, 255, 0.05);
+            --border-card: rgba(255, 255, 255, 0.08);
+            --border-active: rgba(91, 155, 213, 0.4);
+            --radius-sm: 6px;
+            --radius: 14px;
+            --radius-lg: 22px;
+            --radius-xl: 30px;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.5);
+            --shadow-glow: 0 0 60px rgba(91, 155, 213, 0.1);
+            --transition-fast: 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            --transition-smooth: 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            --font-display: 'Space Grotesk', 'Noto Sans SC', system-ui, sans-serif;
+            --font-body: 'Noto Sans SC', system-ui, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-root);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            position: relative;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            /* 优化滚动流畅度 */
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+        }
+
+        /* ===== 静态网格背景 (无动画，大幅降低重绘) ===== */
+        #grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.12;
+            background-image:
+                linear-gradient(rgba(91, 155, 213, 0.12) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(91, 155, 213, 0.12) 1px, transparent 1px);
+            background-size: 55px 55px;
+            /* 静态背景，不再移动，彻底解决滚动时网格动画造成的卡顿 */
+        }
+
+        /* ===== 静态光晕 (无动画 + 降低模糊开销) ===== */
+        .glow-orb {
+            position: fixed;
+            width: 550px;
+            height: 550px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.09;
+            pointer-events: none;
+            z-index: 0;
+            background: radial-gradient(circle, var(--accent-primary), transparent 70%);
+            top: 15%;
+            left: 65%;
+            /* 完全静态，避免动画造成的滚动卡顿 */
+        }
+
+        .glow-orb.second {
+            background: radial-gradient(circle, var(--accent-purple), transparent 70%);
+            top: 55%;
+            left: 10%;
+            width: 480px;
+            height: 480px;
+            opacity: 0.07;
+        }
+
+        /* 主容器 — 使用块级自然滚动 */
+        .game-wrapper {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 980px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.8rem;
+        }
+
+        /* 返回链接优化 */
+        .back-link {
+            align-self: flex-start;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: var(--text-secondary);
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            background: rgba(15, 20, 32, 0.75);
+            border: 1px solid var(--border-subtle);
+            transition: var(--transition-fast);
+            backdrop-filter: none;
+        }
+
+        .back-link:hover {
+            color: #fff;
+            border-color: rgba(91, 155, 213, 0.6);
+            background: rgba(91, 155, 213, 0.12);
+            transform: translateX(-3px);
+        }
+
+        .back-link .arrow {
+            transition: var(--transition-fast);
+        }
+
+        .back-link:hover .arrow {
+            transform: translateX(-3px);
+        }
+
+        /* 卡片样式 — 移除高开销的 backdrop-filter 模糊，改用纯色半透明 + 微质感 */
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            padding: 2.2rem 2rem;
+            border: 1px solid var(--border-card);
+            box-shadow: var(--shadow-md);
+            transition: var(--transition-smooth);
+            /* 保证卡片间边缘抗锯齿，不启用滤镜 */
+            will-change: transform;
+        }
+
+        .card:hover {
+            border-color: rgba(255, 255, 255, 0.12);
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        /* 头部区域 */
+        .game-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 1rem;
+        }
+
+        .game-icon {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;      /* 关键修改：从固定圆角改为50%圆形 */
+            object-fit: cover;       /* 可选：让图片填满圆形区域而不变形（原为 contain） */
+            box-shadow: 0 0 28px rgba(91, 155, 213, 0.25);
+            object-fit: contain;
+            background: rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease;
+        }
+
+        .game-icon:hover {
+            transform: scale(1.02);
+        }
+
+        h1 {
+            font-family: var(--font-display);
+            font-size: 2.6rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #ffffff, #bdd8f5);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-family: var(--font-mono);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            letter-spacing: 0.08em;
+        }
+
+        /* 简介文本 */
+        .intro-text {
+            color: var(--text-secondary);
+            line-height: 1.85;
+            font-size: 1rem;
+            text-align: left;
+            margin-top: 0.5rem;
+        }
+
+        .intro-text strong {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        /* 截图网格 - 性能友好 hover */
+        .screenshots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.2rem;
+            margin-top: 1rem;
+        }
+
+        .screenshot-item {
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 1px solid var(--border-card);
+            background: #03060b;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-fast);
+            cursor: pointer;
+            will-change: transform;
+        }
+
+        .screenshot-item:hover {
+            transform: scale(1.02);
+            border-color: var(--border-active);
+            box-shadow: var(--shadow-md);
+        }
+
+        .screenshot-item img {
+            width: 100%;
+            display: block;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+            transition: opacity 0.2s;
+            background: #0a0e18;
+        }
+
+        /* 技术原理图 */
+        .tech-diagram {
+            width: 100%;
+            border-radius: var(--radius);
+            margin-top: 0.5rem;
+            border: 1px solid var(--border-card);
+            box-shadow: var(--shadow-sm);
+            background: #0a0e17;
+            transition: var(--transition-fast);
+            display: block;
+        }
+
+        .tech-diagram:hover {
+            border-color: var(--border-active);
+            box-shadow: var(--shadow-md);
+            transform: scale(1.008);
+        }
+
+        /* AI 卡片网格 */
+        .ai-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 1.2rem;
+            margin-top: 1.2rem;
+        }
+
+        .ai-card {
+            background: var(--bg-elevated);
+            border-radius: var(--radius);
+            padding: 1.2rem 1.2rem;
+            border: 1px solid var(--border-card);
+            transition: var(--transition-fast);
+            will-change: transform;
+        }
+
+        .ai-card:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .ai-card h4 {
+            font-family: var(--font-display);
+            color: #fff;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+        }
+
+        .ai-card .ai-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 4px currentColor;
+        }
+
+        .ai-card p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.65;
+        }
+
+        /* 下载区域 */
+        .download-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1.8rem;
+            border-radius: 60px;
+            text-decoration: none;
+            font-family: var(--font-display);
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            font-size: 0.9rem;
+            transition: var(--transition-fast);
+            cursor: pointer;
+            color: #fff;
+            background: rgba(91, 155, 213, 0.1);
+            border: 1px solid rgba(91, 155, 213, 0.3);
+            will-change: transform;
+        }
+
+        .btn:hover {
+            background: rgba(91, 155, 213, 0.22);
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 16px rgba(91, 155, 213, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(115deg, var(--accent-primary), #3c7eb3);
+            border: none;
+            box-shadow: 0 8px 20px rgba(91, 155, 213, 0.3);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 10px 28px rgba(91, 155, 213, 0.45);
+            transform: translateY(-3px);
+        }
+
+        .btn-disabled {
+            background: rgba(30, 35, 48, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            cursor: not-allowed;
+            pointer-events: none;
+            opacity: 0.6;
+            transform: none;
+        }
+
+        .version-tag {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 0.9rem;
+            letter-spacing: 0.3px;
+        }
+
+        /* 响应式优化 */
+        @media (max-width: 640px) {
+            .game-wrapper {
+                gap: 1.2rem;
+            }
+
+            .card {
+                padding: 1.5rem 1.2rem;
+                border-radius: var(--radius-lg);
+            }
+
+            h1 {
+                font-size: 1.9rem;
+            }
+
+            .game-icon {
+                width: 80px;
+                height: 80px;
+            }
+
+            .screenshots-grid {
+                grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+                gap: 0.8rem;
+            }
+
+            .ai-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 更小屏优化 */
+        @media (max-width: 480px) {
+            body {
+                padding: 1rem 0.8rem;
+            }
+
+            .card {
+                padding: 1.2rem 1rem;
+            }
+
+            .btn {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.8rem;
+            }
+
+            .intro-text {
+                font-size: 0.92rem;
+                line-height: 1.7;
+            }
+        }
+
+        /* 为所有hover提升提供硬件加速 */
+        .screenshot-item,
+        .ai-card,
+        .btn,
+        .tech-diagram,
+        .card {
+            transform: translateZ(0);
+            backface-visibility: hidden;
+        }
+
+        /* 改善滚动条样式（可选，优雅但不影响性能） */
+        ::-webkit-scrollbar {
+            width: 6px;
+            background: #0f1420;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #2c3f5c;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4a6e96;
+        }
+    </style>
+</head>
+<body>
+    <!-- 静态背景层 无动画 -->
+    <div id="grid-bg"></div>
+    <!-- 固定光晕 已去除动画 -->
+    <div class="glow-orb"></div>
+    <div class="glow-orb second"></div>
+
+    <div class="game-wrapper">
+        <!-- 返回主页链接 -->
+        <a href="index.html" class="back-link">
+            <span class="arrow">👈</span> 返回主页
+        </a>
+
+        <!-- 头部卡片 -->
+        <div class="card game-header">
+            <img src="assets/images/game_warden/项目图标.png" alt="奇点监狱图标" class="game-icon" loading="eager" fetchpriority="high">
+            <h1>奇点监狱 · AI失控</h1>
+            <div class="subtitle">Singularity Prison · 揭阳第一中学数模队出品</div>
+            <div class="intro-text">
+                <p>本项目将<strong>数学建模与AI深度融合</strong>，用游戏讲述一个关于失控的寓言。AI不是冰冷的算法，而是四种人性侧面的镜像——执着的寻路者、善于学习的模仿者、完美主义的混合体、预判一切的掌控者。玩家在逃亡中经历的不仅是技术对抗，更是一次关于<strong>“人类该如何与自己的造物共处”</strong>的灵魂拷问——智能失控，即成囚笼。</p>
+            </div>
+        </div>
+
+        <!-- 下载卡片 -->
+        <div class="card" style="text-align:center;">
+            <h2 style="font-family:var(--font-display); margin-bottom:0.75rem; letter-spacing:-0.3px;">⬇️ 下载游戏</h2>
+            <div class="download-group">
+                <a href="https://1drv.ms/u/c/98019b7fcbdd4704/IQBq08KT_EKcR4J3CoCfeW7-ATRKcNLL309Y3Ty5LX3oivA?e=gPLsiH" class="btn btn-primary" download>
+                    💻 Windows 便携版下载
+                </a>
+                <span class="btn btn-disabled">🍎 macOS 即将推出</span>
+                <span class="btn btn-disabled">🐧 Linux 即将推出</span>
+            </div>
+            <div class="version-tag">
+                📦 版本 v1.0 · Windows 64位 · 大小约 194MB · 最后更新 2025.05
+            </div>
+<div class="version-tag">
+                 文件SHA256检验值：d17f1b6c19a3f910ec30b72217bb52111565a22eee021d1193dcf3b66aa55128
+            </div>
+            <div class="version-tag">
+                🛠️ 难度配置工具：Configuration_Tool.exe &nbsp;&nbsp;|&nbsp;&nbsp; 🎮 游戏文件：prison_eng.exe
+            </div>
+        </div>
+
+        <!-- 截图卡片 -->
+        <div class="card">
+            <h2 style="font-family:var(--font-display); text-align:center; margin-bottom:1rem;">🎮 游玩截图</h2>
+            <div class="screenshots-grid">
+                <div class="screenshot-item"><img src="assets/images/game_warden/实物图1.png" alt="游戏截图1" loading="lazy" decoding="async"></div>
+                <div class="screenshot-item"><img src="assets/images/game_warden/实物图2.png" alt="游戏截图2" loading="lazy" decoding="async"></div>
+                <div class="screenshot-item"><img src="assets/images/game_warden/实物图3.png" alt="游戏截图3" loading="lazy" decoding="async"></div>
+                <div class="screenshot-item"><img src="assets/images/game_warden/实物图4.jpeg" alt="游戏截图4" loading="lazy" decoding="async"></div>
+                <div class="screenshot-item"><img src="assets/images/game_warden/实物图5.jpeg" alt="游戏截图5" loading="lazy" decoding="async"></div>
+            </div>
+        </div>
+
+        <!-- 技术原理图卡片 -->
+        <div class="card">
+            <h2 style="font-family:var(--font-display); text-align:center; margin-bottom:1rem;">📐 技术原理图</h2>
+            <img src="assets/images/game_warden/技术原理图.png" alt="技术原理图" class="tech-diagram" loading="lazy" decoding="async">
+        </div>
+
+        <!-- 创新点与核心技术卡片 -->
+        <div class="card">
+            <h2 style="font-family:var(--font-display); text-align:center; margin-bottom:1rem;">💡 创新点与核心技术</h2>
+            <p style="color:var(--text-secondary); text-align:center; margin-bottom:1.5rem;">为了打破传统追捕游戏AI行为固化的痛点，我们将数学建模与AI绑定，设计了四个AI，并将其涉及的算法可视化。</p>
+            <div class="ai-grid">
+                <div class="ai-card">
+                    <h4><span class="ai-dot" style="background:#e0556a; box-shadow:0 0 6px #e0556a;"></span> A*寻路者（红）</h4>
+                    <p>图论最优化，永远计算最短路径，偏执而坚定——探寻一切未知的探险家</p>
+                </div>
+                <div class="ai-card">
+                    <h4><span class="ai-dot" style="background:#e8a85f;"></span> Q-learning学习者（橙）</h4>
+                    <p>马尔可夫决策，从玩家逃亡中迭代成长，你跑得越久、他越懂你——吐纳人类经验的历史学家</p>
+                </div>
+                <div class="ai-card">
+                    <h4><span class="ai-dot" style="background:#b78ce6;"></span> 混合终结者（紫）</h4>
+                    <p>融合确定性规划与随机探索，展示多算法协同的高级AI形态——融合混沌思维的哲学家</p>
+                </div>
+                <div class="ai-card">
+                    <h4><span class="ai-dot" style="background:#e8739a;"></span> 轨迹预测者（粉）</h4>
+                    <p>卡尔曼滤波与时间序列预测，它不追现在的你，它追的是两秒后的你——超越人类局限的心理学家</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 应用价值卡片 -->
+        <div class="card">
+            <h2 style="font-family:var(--font-display); text-align:center; margin-bottom:1rem;">🌍 应用价值</h2>
+            <p class="intro-text" style="text-align:center;">
+                核心应用场景聚焦于<strong>科普教育</strong>：将抽象的AI技术与数学算法可视化、具象化，打破“数学只有公式、AI只有代码”的刻板印象，让青少年在沉浸式游戏体验中理解技术原理，同时通过故事传递<strong>AI伦理观念</strong>，引导人们思考技术发展与人性边界的平衡。
+            </p>
+        </div>
+
+        <!-- 页脚 -->
+        <div style="text-align:center; padding:1rem 0.5rem; color:var(--text-muted); font-family:var(--font-mono); font-size:0.7rem; letter-spacing:0.5px;">
+            © 2026 揭阳第一中学数模队 · 奇点监狱 Singularity Prison
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // 为所有截图增加轻量级点击预览（不影响性能，新窗口打开大图）
+            const screenshots = document.querySelectorAll('.screenshot-item img');
+            if (screenshots.length) {
+                screenshots.forEach(img => {
+                    img.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        // 使用原生新窗口打开图片，不引入复杂组件，保证滑动体验
+                        window.open(img.src, '_blank');
+                    });
+                    // 增加无障碍提示
+                    img.setAttribute('role', 'button');
+                    img.style.cursor = 'pointer';
+                });
+            }
+
+            // 可选：轻微优化滚动性能，避免被动监听器（本页面无主动滚动监听，无需额外处理）
+            // 确保任何卡顿风险降低：无requestAnimationFrame持续动画，无setInterval
+        })();
+    </script>
+</body>
+</html>
