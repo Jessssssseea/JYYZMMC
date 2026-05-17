@@ -1,302 +1,385 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>揭阳第一中学数模队官网</title>
-  <meta name="description" content="揭阳一中官方数学建模校队，全员队干风采、宣传片、招新海报一站式浏览。"/>
-  <link rel="icon" href="assets/images/logo.png"/>
-  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数模队主页</title>
+  <!-- 引入AOS滚动动画 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css">
   <style>
-    :root{
-      --bg:#0d1b2a;
-      --card:#1b263b;
-      --accent:#00b4d8;
-      --text:#f1faee;
-      --radius:12px;
-      --font:'Segoe UI',sans-serif;
+    /* 全局基础样式 */
+    :root {
+      --radius: 12px;
+      --transition-smooth: all 0.4s ease;
+      --transition-spring: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+      --border-card: rgba(255,255,255,0.1);
+      --shadow-sm: 0 4px 12px rgba(0,0,0,0.15);
+      --text-secondary: rgba(255,255,255,0.7);
+      --font-display: 'Microsoft YaHei', sans-serif;
     }
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6}
-    header{display:flex;justify-content:space-between;align-items:center;padding:.8rem 2rem;background:rgba(0,0,0,.4);backdrop-filter:blur(8px);position:sticky;top:0;z-index:1000}
-    .logo{height:46px}
-    nav a{margin-left:1.2rem;color:var(--text);text-decoration:none;font-weight:600}
-    nav a:hover{color:var(--accent)}
-    section{padding:4rem 6vw;max-width:1200px;margin:auto}
-    h2{font-size:2rem;margin-bottom:1.5rem;text-align:center;color:var(--accent)}
-    #hero{height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;background:url('assets/images/hero-poster.jpg') center/cover fixed;position:relative}
-    #hero h1{font-size:3rem;letter-spacing:2px}
-    .scroll-hint{position:absolute;bottom:10vh;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;color:#fff;font-size:.9rem;animation:float 2s ease-in-out infinite}
-    .scroll-hint svg{width:24px;height:24px;fill:#fff;margin-top:.25rem}
-    @keyframes float{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(8px)}}
-    .about-inner{display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:center}
-    .video-wrapper{position:relative;border-radius:12px;overflow:hidden}
-    .video-wrapper img{width:100%;display:block}
-    .play-btn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:60px;height:60px;background:rgba(0,0,0,.4);border-radius:50%;display:flex;align-items:center;justify-content:center}
-    .play-btn::after{content:'▶';color:#fff;font-size:24px;margin-left:4px}
-    .poster-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem}
-    .poster-grid img{width:100%;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.3);transition:.3s}
-    .poster-grid img:hover{transform:scale(1.03)}
-    .timeline{list-style:none;position:relative;padding-left:2rem}
-    .timeline li{margin:2rem 0;position:relative}
-    .timeline li::before{content:'';width:12px;height:12px;background:var(--accent);border-radius:50%;position:absolute;left:-2rem;top:.3rem}
-    .rules-list{list-style:decimal inside}
-    /* 3D 翻转卡片容器 */
-    .team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1.5rem;perspective:1200px}
-    .flip-card{position:relative;width:100%;aspect-ratio:1/1;cursor:pointer;transform-style:preserve-3d;transition:transform .6s}
-    .flip-card.flipped{transform:rotateY(180deg)}
-    .flip-face{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:var(--radius);overflow:hidden;background:var(--card);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:.5rem;text-align:center}
-    .flip-face img{width:100%;height:100%;object-fit:cover;border-radius:var(--radius)}
-    .flip-back{transform:rotateY(180deg);justify-content:center}
-    .flip-back h3{margin:.25rem 0;font-size:1rem;color:var(--accent)}
-    footer{text-align:center;padding:2rem;background:#000;color:#aaa}
-    .btn{background:var(--accent);color:#fff;padding:.75rem 1.5rem;border-radius:30px;text-decoration:none;display:inline-block;margin:.5rem .25rem;transition:.3s}
-    .btn:hover{transform:scale(1.05)}
-    @media(max-width:768px){.about-inner{grid-template-columns:1fr}}
 
-    /* 视频固定 16:9 */
-    .video-container{position:relative;width:100%;max-width:720px;margin:auto;border-radius:var(--radius);overflow:hidden}
-    .video-container video{width:100%;height:auto;display:block;border-radius:var(--radius);outline:none}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-    /* 海报两列 */
-    .poster-row{display:flex;gap:1rem;flex-wrap:wrap}
-    .poster-row img{flex:1 1 calc(50% - .5rem);min-width:250px;border-radius:var(--radius);box-shadow:0 4px 12px rgba(0,0,0,.3);transition:.3s}
-    .poster-row img:hover{transform:scale(1.03)}
+    body {
+      font-family: 'Microsoft YaHei', sans-serif;
+      color: #fff;
+      background-color: #06080d;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
 
-    .space {height:40px}
-    p1 {font-size: 1.2rem}
+    /* 背景轮播容器 */
+    .bg-carousel {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      overflow: hidden;
+    }
+
+    .carousel-item {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      opacity: 0;
+      transition: opacity 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .carousel-item.active {
+      opacity: 1;
+    }
+
+    /* 渐变蒙版，保证文字清晰 */
+    .carousel-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        180deg,
+        rgba(6, 8, 13, 0.85) 0%,
+        rgba(10, 14, 23, 0.88) 50%,
+        rgba(6, 8, 13, 0.92) 100%
+      );
+      z-index: 1;
+    }
+
+    /* 网格光效背景 */
+    #grid-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(25,30,45,0.3) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(25,30,45,0.3) 1px, transparent 1px);
+      background-size: 40px 40px;
+      z-index: -1;
+    }
+
+    #glow-orb {
+      position: fixed;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(66,133,244,0.15) 0%, transparent 70%);
+      top: 20%;
+      left: 10%;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    #glow-orb.second {
+      left: auto;
+      right: 15%;
+      top: 60%;
+      background: radial-gradient(circle, rgba(255,109,0,0.12) 0%, transparent 70%);
+    }
+
+    /* 页面头部 */
+    header {
+      padding: 2rem 4vw;
+      text-align: center;
+    }
+
+    .logo {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      color: #4285f4;
+    }
+
+    .subtitle {
+      color: var(--text-secondary);
+      font-size: 1rem;
+    }
+
+    /* 通用区块标题样式 */
+    .section-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .section-tag {
+      display: inline-block;
+      padding: 0.4rem 1rem;
+      background: rgba(66,133,244,0.15);
+      color: #4285f4;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+    }
+
+    .section-header h2 {
+      font-size: 2.2rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .section-divider {
+      width: 60px;
+      height: 3px;
+      background: #4285f4;
+      margin: 0 auto 1rem;
+      border-radius: 3px;
+    }
+
+    .section-subtitle {
+      color: var(--text-secondary);
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* 照片墙样式 */
+    #photo-wall {
+      padding: 5rem 4vw;
+      max-width: 1400px;
+      margin: auto;
+    }
+
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.8rem;
+      margin-top: 2rem;
+    }
+
+    .photo-item {
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: var(--transition-smooth);
+    }
+
+    .photo-img {
+      position: relative;
+      aspect-ratio: 4/3;
+      overflow: hidden;
+      border-radius: var(--radius);
+      border: 1px solid var(--border-card);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .photo-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: var(--transition-spring);
+    }
+
+    .photo-item:hover .photo-img img {
+      transform: scale(1.08);
+      filter: brightness(1.1);
+    }
+
+    .photo-caption {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 1.2rem;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+      transform: translateY(100%);
+      transition: var(--transition-smooth);
+    }
+
+    .photo-item:hover .photo-caption {
+      transform: translateY(0);
+    }
+
+    .photo-caption h4 {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      color: #fff;
+      margin-bottom: 0.3rem;
+      font-weight: 600;
+    }
+
+    .photo-caption p {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* 底部 */
+    footer {
+      text-align: center;
+      padding: 3rem 4vw;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    /* 响应式适配 */
+    @media (max-width: 900px) {
+      .photo-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.2rem;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .photo-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      .photo-caption {
+        padding: 0.8rem;
+      }
+      .section-header h2 {
+        font-size: 1.8rem;
+      }
+    }
   </style>
 </head>
-
 <body>
-<!-- 顶部导航 -->
-<header>
-  <img src="assets/images/logo.png" class="logo" alt="队徽"/>
-  <nav>
-    <a href="#about">关于我们</a>
-    <a href="#poster">宣传海报</a>
-    <a href="#events">品牌活动</a>
-    <a href="#team">队干风采</a>
-    <a href="#awards">荣誉</a>
-    <a href="#rules">队规</a>
-    <a href="#join">加入我们</a>
-  </nav>
-</header>
-
-<!-- HERO -->
-<section id="hero">
-  <div class="hero-inner">
-    <!-- 社徽 -->
-    <img
-      src="assets/images/logo.png"
-      alt="社徽"
-      style="
-        width: 20vmin;        /* 跟随屏幕比例 */
-        min-width: 120px;
-        max-width: 220px;
-        opacity: 0.85;
-        filter: drop-shadow(0 0 10px rgba(0,0,0,.5));
-        margin-bottom: 2rem;
-      "
-    />
-  <div class="hero-inner">
-    <h1>揭阳第一中学数模队</h1>
-    <p>Model the World, Code the Future.</p>
-    <a href="#about" class="scroll-hint">
-      <span>向下滑动</span>
-      <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
-    </a>
+  <!-- 1. 全屏背景轮播 -->
+  <div id="bg-carousel" class="bg-carousel">
+    <div class="carousel-item active" style="background-image: url('assets/images/activities/bg1.jpg');"></div>
+    <div class="carousel-item" style="background-image: url('assets/images/activities/bg2.jpg');"></div>
+    <div class="carousel-item" style="background-image: url('assets/images/activities/bg3.jpg');"></div>
+    <div class="carousel-overlay"></div>
   </div>
-</section>
 
-<!-- 本地视频 -->
-<section id="about">
-  <h2>关于我们</h2>
-  <a href="play-video.html">
-  <img src="assets/images/hero-poster.png" alt="宣传片封面" style="width:100%;border-radius:12px;">
-  </a>
-  <p style="margin-top:1rem;text-align:center;">点击播放揭阳第一中学数模队官方宣传片</p>
+  <!-- 2. 网格+光效背景 -->
+  <div id="grid-bg"></div>
+  <div id="glow-orb"></div>
+  <div id="glow-orb" class="second"></div>
 
-  <div class="about-text">
-      <p class="space"> </p>
-      <p1>揭阳第一中学数模队成立于2025年，是校党委领导、团委指导下的官方学术科技类校队，现有注册队干16人。我们以「竞赛+学术+技术」三位一体为核心，累计获得国家级一等奖1项、国家级二等奖5项、国家级三等奖3项。</p1>
-      <p1>校队拥有独立的数学建模实验室，顶级的设备配置，为成员提供全天候科研环境。</p1>
+  <!-- 3. 页面头部 -->
+  <header>
+    <div class="logo">数学建模协会</div>
+    <p class="subtitle">用数学思维解决实际问题 · 用模型探索世界规律</p>
+  </header>
+
+  <!-- 4. 照片墙区块 -->
+  <section id="photo-wall">
+    <div class="section-header">
+      <span class="section-tag">Photo Wall</span>
+      <h2>数模队风采瞬间</h2>
+      <div class="section-divider"></div>
+      <p class="section-subtitle">记录数模队的成长、比赛、团建点滴，定格每一个精彩瞬间</p>
     </div>
-</section>
 
-<!-- 宣传海报 -->
-<section id="poster">
-  <h2>宣传海报</h2>
-  <div class="poster-row">
-    <img src="assets/images/主宣传单.png" alt="宣传单"/>
-    <img src="assets/images/副宣传单.jpg" alt="详细宣传单"/>
-
-    <img src="assets/images/竞赛部.jpg" alt="竞赛部宣传单"/>
-    <img src="assets/images/资源枢纽部.jpg" alt="资源枢纽部宣传单"/>
-  </div>
-</section>
-
-<!-- 品牌活动 -->
-<section id="events">
-  <h2>品牌活动</h2>
-  <ul class="timeline">
-    <li><span>每周基础培训</span><p>数学建模理论 / Python / MATLAB / LaTeX</p></li>
-    <li><span>双周学术沙龙</span><p>国奖学长 & 大学教授前沿分享</p></li>
-    <li><span>48h 模拟赛</span><p>交通/环境/金融等真实数据实战</p></li>
-    <li><span>年度成果展 & 公开论坛</span><p>校内巡展 + B站直播</p></li>
-  </ul>
-</section>
-
-
-<!-- 队干风采（17人全员，3D翻转卡片） -->
-<section id="team">
-  <h2>队干风采</h2>
-  <div class="team-grid" id="team-grid"></div>
-</section>
-
-<!-- 奖状 -->
-<section id="awards">
-  <h2>荣誉（鼠标点按有惊喜）</h2>
-  <div class="container">
-    <div class="card" style="--i:-2.5"><img src="assets/images/awards/林宏伟   能力测试一等奖.jpg" alt="国家级一等奖" style="width:100%;height:100%;object-fit:cover;"></div>
-    <div class="card" style="--i:-1.5"><img src="assets/images/awards/林宏伟   综合二等奖.jpg" alt="国家级二等奖" style="width:100%;height:100%;object-fit:cover;"></div>
-    <div class="card" style="--i:-0.5"><img src="assets/images/awards/王梓泰   能力测试二等奖.png" alt="国家级二等奖" style="width:100%;height:100%;object-fit:cover;"></div>
-    <div class="card" style="--i:0.5"><img src="assets/images/awards/王梓泰、林宏伟   论文二等奖.jpg" alt="国家级二等奖" style="width:100%;height:100%;object-fit:cover;"></div>
-    <div class="card" style="--i:1.5"><img src="assets/images/awards/王梓泰   综合二等奖.png" alt="国家级二等奖" style="width:100%;height:100%;object-fit:cover;"></div>
-    <div class="card" style="--i:2.5"><img src="assets/images/awards/谢柯烁、郑思佳、陈平浩   论文三等奖.jpg" alt="国家级三等奖" style="width:100%;height:100%;object-fit:cover;"></div>
-  </div>
-  <style>
-    .container .card{
-      position: absolute;
-      width: 362px;
-      height: 259.4px;
-      background-color: #5e5cfc;
-      border-radius: 8px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: rgba(0, 0, 0, 1);
-      font-size: 8em;
-      font-weight: 700;
-      border: 10px solid rgba(0, 0, 0, .1);
-      transition: .5s;
-      transform-origin: 50% 100%;
-      filter: hue-rotate(calc(var(--i) * 60deg));
-      box-shadow: 0 15px 50px rgba(0, 0, 0, .1);
-    }
-    .container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 400px;
-    }
-    .container:hover .card{
-      transform: rotate(calc(var(--i) * 5deg))
-                 translate(calc(var(--i) * 120px), -50px);
-      box-shadow: 0 15px 50px rgba(0, 0, 0, .25);
-      color: rgba(0, 0, 0, .25);
-      cursor: pointer;
-    }
-    .container:active .card:not(:active){
-      background-color: #333;
-    }
-    .container .card:active{
-      translate: calc(var(--i) * 20px)-50px;
-      z-index: 999;
-    }
-  </style>
-</section>
-
-<!-- 队规 -->
-<section id="rules">
-  <h2>队规摘要</h2>
-  <ol class="rules-list">
-    <li>按时参加训练与例会，请假须提前报备。</li>
-    <li>严禁在活动中出现违禁品或损害校队声誉行为。</li>
-    <li>每学期量化考核，连续两次不合格者暂停资格。</li>
-    <li>设立“资源转化奖”“协同先锋奖”等荣誉及资源倾斜。</li>
-    <li>本队规解释权归队长联席会所有。</li>
-  </ol>
-  <!-- 新增下载按钮 -->
-  <div style="text-align:center;margin-top:2rem">
-    <a class="btn" href="assets/pdf/rules.pdf" download="揭阳第一中学数模队队规.pdf">立即下载完整队规 PDF</a>
-  </div>
-</section>
-
-<!-- 加入我们 -->
-<section id="join">
-  <h2>加入我们</h2>
-  <p>零基础可报名，面试只看热情与脑洞！</p>
-  <div class="join-way">
-    <a class="btn" href="http://wpa.qq.com/msgrd?v=3&uin=103312220&site=qq&menu=yes" target="_blank">咨询 QQ 群 103312220</a>
-  </div>
-  <p>招生计划：40~50人/届</p>
-  <p>欢迎105、106届的一中学子前来报名</p>
-  <div class="join-way">
-    <a class="btn" href="https://wj.qq.com/s2/23398546/ad18/" target="_blank">报名意向表</a>
-    <a class="btn" href="mailto:jess2285287248@gamil.com&subject=我要加入一中数模队&body=参考格式：我是xxx，来自xxxxx，初中毕业学校是xxx，我会xxx，想要加入数模队！">发送邮件</a>
-  </div>
-</section>
-
-<!-- Wenjuan Layer Begin --> <div id="idy_floatdiv" style="position:fixed;display:flex;right:0;bottom:10%;width:30px;border-top-left-radius:6px;border-bottom-left-radius:6px;height:100px;background:#26B941;line-height: 24px;writing-mode:vertical-rl;align-items:center;justify-content:center;font-family:PingFangSC-Regular;font-size:16px;"> <a href="https://wj.qq.com/s2/23398546/ad18/" target="blank" style="color:#FFFFFF;text-decoration:none;">报名填报</a> </div> <!-- Wenjuan Layer End -->
-
-<footer>
-  <p>&copy; 2025 揭阳第一中学数模队 · All rights reserved.</p>
-</footer>
-
-<!-- 队干数据与卡片生成 -->
-<script>
-const leaders = [
-  { name:'王梓泰',title:'队长',dept:'管理部',rand:true,said:'“地道儿～”'},
-  { name:'郑烨骏',title:'副队长·业务线',dept:'管理部',said:'“INTJ   头脑简单，四肢不发达；喜欢篮球🏀、羽毛球🏸   想在数模队交到志同道合的朋友”'},
-  { name:'蒋妮',title:'副队长·支持线',dept:'管理部',said:''},
-  { name:'陈平浩',title:'技术指导专员',dept:'管理部',said:'“嘿~(¯▽¯~)  欢迎各位师弟师妹们来找我玩啊  读书，吉他，跑步，摄影，书法都可以来交流啊ヾ(≧▽≦*)o”'},
-  { name:'钟子坤',title:'资源枢纽部长',dept:'资源枢纽部',said:'“INTJ极度社恐  喜欢摄影 Kpop 画画 看小说”'},
-  { name:'邱钰棋',title:'品牌组组长',dept:'资源枢纽',rand:true,said:'“无”'},
-  { name:'林可凡',title:'品牌组组员',dept:'资源枢纽',said:'“#摄影  世界倒映在胶卷，眼睛赏析废墟里的“旷野”。哪怕“生命如暗室”也“不妨我明写春诗”。”'},
-  { name:'王湉',title:'外联组组长',dept:'资源枢纽',said:''},
-  { name:'卓怡彤',title:'秘书组组长',dept:'资源枢纽',said:'“我喜欢看小说🤗，听歌（喜欢五月天，孙燕姿，许嵩），喜欢拍照记录生活，喜欢旅游”'},
-  { name:'陈蔚宸',title:'技术组组长',dept:'资源枢纽',said:''},
-  { name:'洪钊涵',title:'管理组组长',dept:'竞赛部',said:''},
-  { name:'林孝锶',title:'竞赛部部长',dept:'竞赛部',said:''},
-  { name:'江恩跃',title:'成员组',dept:'竞赛部',said:''},
-  { name:'黄倍鑫',title:'成员组',dept:'竞赛部',said:'“权威”'},
-  { name:'何思凯',title:'培训组组长',dept:'竞赛部',said:''},
-  { name:'吴偲',title:'学研组组长',dept:'学研部',said:''}
-];
-
-const grid = document.getElementById('team-grid');
-leaders.forEach(l=>{
-  const imgSrc = l.rand
-    ? `assets/images/leaders/${l.name}${Math.random()>.5?1:2}.jpg`
-    : `assets/images/leaders/${l.name}.jpg`;
-  grid.insertAdjacentHTML('beforeend', `
-    <div class="flip-card">
-      <div class="flip-face">
-        <img src="${imgSrc}" alt="${l.name}">
+    <div class="photo-grid">
+      <div class="photo-item" data-aos="fade-up">
+        <div class="photo-img">
+          <img src="assets/images/activities/photo1.jpg" alt="数模队比赛现场">
+          <div class="photo-caption">
+            <h4>全国数模竞赛现场</h4>
+            <p>2024年全国大学生数学建模竞赛备赛现场</p>
+          </div>
+        </div>
       </div>
-      <div class="flip-face flip-back">
-        <h3>${l.name}</h3>
-        <span>${l.title}</span>
-        <small>${l.dept}</small>
-        <small>${l.said}</small>
+
+      <div class="photo-item" data-aos="fade-up" data-aos-delay="100">
+        <div class="photo-img">
+          <img src="assets/images/activities/photo2.jpg" alt="团建活动">
+          <div class="photo-caption">
+            <h4>团队建设活动</h4>
+            <p>2024届数模队户外团建，增强团队凝聚力</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="photo-item" data-aos="fade-up" data-aos-delay="200">
+        <div class="photo-img">
+          <img src="assets/images/activities/photo3.jpg" alt="获奖合影">
+          <div class="photo-caption">
+            <h4>省级奖项颁奖</h4>
+            <p>2024年广东省数学建模竞赛获奖合影</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="photo-item" data-aos="fade-up" data-aos-delay="300">
+        <div class="photo-img">
+          <img src="assets/images/activities/photo4.jpg" alt="日常研讨">
+          <div class="photo-caption">
+            <h4>日常研讨交流</h4>
+            <p>队员们日常研讨数学建模问题</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="photo-item" data-aos="fade-up" data-aos-delay="400">
+        <div class="photo-img">
+          <img src="assets/images/activities/photo5.jpg" alt="招新宣讲">
+          <div class="photo-caption">
+            <h4>2024招新宣讲</h4>
+            <p>面向新生的数模队招新宣讲会</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="photo-item" data-aos="fade-up" data-aos-delay="500">
+        <div class="photo-img">
+          <img src="assets/images/activities/photo6.jpg" alt="校际交流">
+          <div class="photo-caption">
+            <h4>校际交流活动</h4>
+            <p>与兄弟学校数模队交流学习</p>
+          </div>
+        </div>
       </div>
     </div>
-  `);
-});
+  </section>
 
-// 3D 翻转动画（鼠标悬停）
-document.querySelectorAll('.flip-card').forEach(card=>{
-  card.addEventListener('mouseenter',()=>card.classList.add('flipped'));
-  card.addEventListener('mouseleave',()=>card.classList.remove('flipped'));
-});
+  <!-- 5. 页面底部 -->
+  <footer>
+    <p>© 2025 数学建模协会 版权所有</p>
+  </footer>
 
-// 首屏滚动提示
-document.querySelector('.scroll-hint').addEventListener('click',()=>{
-  document.getElementById('about').scrollIntoView({behavior:'smooth'});
-});
-</script>
+  <!-- JS脚本 -->
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  <script>
+    // 初始化AOS滚动动画
+    AOS.init({
+      duration: 800,
+      easing: 'ease-out',
+      once: true
+    });
+
+    // 背景轮播自动切换
+    const carouselItems = document.querySelectorAll('.carousel-item');
+    let currentIndex = 0;
+
+    function changeCarousel() {
+      carouselItems[currentIndex].classList.remove('active');
+      currentIndex = (currentIndex + 1) % carouselItems.length;
+      carouselItems[currentIndex].classList.add('active');
+    }
+
+    // 5秒切换一次
+    setInterval(changeCarousel, 5000);
+  </script>
 </body>
-
 </html>
-
