@@ -271,6 +271,70 @@
                 font-size: 0.65rem;
             }
         }
+
+        /* 系统深浅色自适应模式 */
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg-root: #f8fafc;
+                --bg-surface: #ffffff;
+                --text-primary: #0f172a;
+                --text-secondary: #334155;
+                --border-subtle: rgba(0, 0, 0, 0.08);
+                --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.15);
+                --shadow-glow: 0 0 80px rgba(91, 155, 213, 0.1);
+            }
+
+            body {
+                background: var(--bg-root) !important;
+            }
+
+            /* 网格背景浅色适配 */
+            #grid-bg {
+                background-image:
+                    linear-gradient(rgba(91, 155, 213, 0.06) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(91, 155, 213, 0.06) 1px, transparent 1px);
+                opacity: 0.12;
+            }
+
+            /* 光晕亮度弱化 */
+            .glow-orb {
+                opacity: 0.07;
+            }
+            .glow-orb.second {
+                opacity: 0.05;
+            }
+
+            /* 返回按钮样式适配 */
+            .back-link {
+                background: rgba(255, 255, 255, 0.85) !important;
+                color: var(--text-secondary) !important;
+            }
+            .back-link:hover {
+                color: var(--accent-primary) !important;
+                background: rgba(91, 155, 213, 0.08) !important;
+            }
+
+            /* 视频卡片底色边框 */
+            .video-card {
+                background: var(--bg-surface) !important;
+                border-color: rgba(0, 0, 0, 0.1) !important;
+            }
+
+            /* 环形发光边框渐变适配 */
+            .video-card::before {
+                background: linear-gradient(135deg, rgba(91, 155, 213, 0.4), transparent 40%, transparent 60%, rgba(91, 155, 213, 0.4));
+            }
+
+            /* 页面标题文字 */
+            .video-title {
+                color: var(--text-primary) !important;
+            }
+
+            /* 页脚备注文字 */
+            .footer-note {
+                color: var(--text-muted) !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -281,7 +345,7 @@
 
     <!-- 主播放器区域 -->
     <div class="player-wrapper">
-        <a href="index.html" class="back-link">
+        <a href="index.html#about" class="back-link">
             <span class="arrow">👈</span> 返回官网
         </a>
 
@@ -299,7 +363,6 @@
     </div>
 
     <script>
-        // 可选的：点击视频卡片区域时，如果视频暂停则播放，否则暂停（作为辅助交互）
         const videoCard = document.querySelector('.video-card');
         const video = videoCard?.querySelector('video');
         if (videoCard && video) {
@@ -317,7 +380,6 @@
         // 键盘空格键控制播放/暂停
         document.addEventListener('keydown', (e) => {
             if (e.code === 'Space' && video && document.activeElement !== document.body) {
-                // 仅当没有其他元素聚焦时（如输入框），但这里没有输入框，所以可以简单处理
                 e.preventDefault();
                 if (video.paused) {
                     video.play();

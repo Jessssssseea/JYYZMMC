@@ -140,23 +140,30 @@
         }
 
         /* ============ 顶部导航 ============ */
+        /* 导航栏 - 默认隐藏，滚动后显示 */
         .navbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 0.5rem 3vw;
-            background: rgba(10, 14, 23, 0.7);
+            background: rgba(10, 14, 23, 0.9);
             backdrop-filter: blur(24px) saturate(140%);
             -webkit-backdrop-filter: blur(24px) saturate(140%);
-            position: sticky;
+            position: fixed;
             top: 0;
+            left: 0;
+            right: 0;
             z-index: 1000;
             border-bottom: 1px solid var(--border-subtle);
-            transition: var(--transition-smooth);
+            transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1), background 0.3s;
+            transform: translateY(-100%);
             gap: 1rem;
         }
+        .navbar.visible {
+            transform: translateY(0);
+        }
         .navbar.scrolled {
-            background: rgba(10, 14, 23, 0.9);
+            background: rgba(10, 14, 23, 0.95);
             box-shadow: 0 2px 30px rgba(0, 0, 0, 0.4);
             border-bottom-color: rgba(255, 255, 255, 0.1);
         }
@@ -453,6 +460,121 @@
             }
         }
 
+        /* 背景轮播容器 & 左右按钮 */
+        .hero-carousel {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        .carousel-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            will-change: opacity;
+        }
+        .carousel-slide.active {
+            opacity: 1;
+            z-index: 1;
+        }
+        .hero-carousel::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(6, 8, 13, 0.55);
+            z-index: 2;
+            pointer-events: none;
+        }
+        /* 弱化文字说明样式 */
+        .carousel-caption {
+            position: absolute;
+            bottom: 12%;
+            left: 0;
+            right: 0;
+            text-align: center;
+            z-index: 15;
+            pointer-events: none;
+            font-family: var(--font-mono);
+            font-size: clamp(0.7rem, 2.5vw, 0.9rem);
+            font-weight: 400;
+            letter-spacing: 0.04em;
+            background: rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(6px);
+            display: inline-block;
+            width: fit-content;
+            margin: 0 auto;
+            padding: 0.3rem 1.2rem;
+            border-radius: 40px;
+            color: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: none;
+            white-space: nowrap;
+            overflow-x: auto;
+            max-width: 85vw;
+        }
+        @media (max-width: 640px) {
+            .carousel-caption {
+                white-space: normal;
+                word-break: keep-all;
+                bottom: 8%;
+                padding: 0.2rem 1rem;
+                font-size: 0.7rem;
+            }
+        }
+        /* 左右箭头按钮 */
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: rgba(255,255,255,0.8);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 20;
+            font-size: 1.5rem;
+            font-weight: 300;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            user-select: none;
+        }
+        .carousel-btn:hover {
+            background: rgba(91, 155, 213, 0.5);
+            border-color: rgba(255,255,255,0.5);
+            color: #fff;
+            transform: translateY(-50%) scale(1.05);
+        }
+        .carousel-btn-left {
+            left: 20px;
+        }
+        .carousel-btn-right {
+            right: 20px;
+        }
+        @media (max-width: 768px) {
+            .carousel-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 1.2rem;
+            }
+            .carousel-btn-left { left: 10px; }
+            .carousel-btn-right { right: 10px; }
+        }
+
         /* ============ 关于我们 ============ */
         #about .about-grid {
             display: grid;
@@ -567,57 +689,6 @@
             color: var(--text-muted);
             letter-spacing: 0.05em;
             font-family: var(--font-mono);
-        }
-
-        /* ============ 宣传海报 ============ */
-        #poster .poster-masonry {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
-        }
-        #poster .poster-masonry .poster-frame {
-            position: relative;
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            border: 1px solid var(--border-card);
-            box-shadow: var(--shadow-md);
-            transition: var(--transition-smooth);
-            aspect-ratio: 3/4;
-            background: var(--bg-surface);
-        }
-        #poster .poster-masonry .poster-frame img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: var(--transition-smooth);
-        }
-        #poster .poster-masonry .poster-frame:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-lg);
-            border-color: rgba(255, 255, 255, 0.2);
-        }
-        #poster .poster-masonry .poster-frame:hover img {
-            transform: scale(1.04);
-        }
-        .poster-frame .poster-label {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 1.2rem;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
-            color: #fff;
-            font-size: 0.85rem;
-            font-weight: 500;
-            letter-spacing: 0.03em;
-            opacity: 0;
-            transform: translateY(10px);
-            transition: var(--transition-smooth);
-            pointer-events: none;
-        }
-        .poster-frame:hover .poster-label {
-            opacity: 1;
-            transform: translateY(0);
         }
 
         /* ============ 品牌活动 ============ */
@@ -1024,9 +1095,6 @@
                 grid-template-columns: 1fr;
                 gap: 2rem;
             }
-            #poster .poster-masonry {
-                grid-template-columns: 1fr 1fr;
-            }
             #awards .award-card {
                 width: 230px;
                 height: 160px;
@@ -1045,9 +1113,6 @@
         @media (max-width: 600px) {
             section {
                 padding: 3rem 1rem;
-            }
-            #poster .poster-masonry {
-                grid-template-columns: 1fr;
             }
             #awards .awards-stage {
                 height: 320px;
@@ -1109,6 +1174,66 @@
                 display: inline;
             }
         }
+
+        @media (prefers-color-scheme: light) {
+          /* 全局基础 */
+          body { background: #f8fafc !important; color: #0f172a !important; }
+
+          /* 浅色模式滚动条适配 */
+          html {
+            scrollbar-color: #5b9bd5 #f1f5f9 !important;
+          }
+          ::-webkit-scrollbar-track {
+            background: #f1f5f9 !important;
+          }
+          ::-webkit-scrollbar-thumb {
+            background: #5b9bd5 !important;
+          }
+
+          /* 导航栏 Header */
+          .navbar { background: rgba(255,255,255,0.95) !important; border-bottom: 1px solid rgba(0,0,0,0.06) !important; }
+          .navbar.scrolled { background: rgba(255,255,255,0.99) !important; }
+          /* 导航栏标题文字 */
+          .nav-brand-text { color: #0f172a !important; }
+          .nav-links a { color: #334155 !important; }
+          .nav-links a:hover { color: #5b9bd5 !important; background: rgba(91,155,213,0.08) !important; }
+          .nav-toggle span { background: #0f172a !important; }
+
+          /* 所有硬编码白色标题/文字全覆盖 */
+          h2, .event-title, .member-back h3, .about-content h3,
+          #game h3[style], .join-panel p[style] {
+            color: #0f172a !important;
+          }
+
+          /* Hero 主标题渐变 */
+          #hero h1 {
+            background: linear-gradient(160deg, #1e293b 0%, #334155 35%, #5b9bd5 65%, #334155 100%) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            background-clip: text !important;
+          }
+
+          /* 面板/卡片背景 */
+          .member-back { background: linear-gradient(155deg, #f8fafc, #e2e8f0) !important; border-color: rgba(91,155,213,0.3) !important; }
+          .join-panel, #game div[style*="background"] { background: #ffffff !important; border-color: rgba(0,0,0,0.08) !important; }
+          .about-stat, #events .events-timeline li, .rules-panel, .member-front { background: #fff !important; border-color: rgba(0,0,0,0.08) !important; }
+
+          /* 全站按钮统一适配 */
+          .btn-primary {
+            background: linear-gradient(135deg, #5b9bd5, #4689c8) !important;
+            color: #ffffff !important;
+          }
+          .join-panel .btn-warm { background: rgba(232, 184, 95, 0.15) !important; color: #0f172a !important; }
+          .join-panel .btn-ghost { border-color: #cbd5e1 !important; color: #0f172a !important; }
+          .btn:hover { opacity: 0.9 !important; }
+
+          /* 交互Hover特效 */
+          #events .events-timeline li:hover { background: #f1f5f9 !important; }
+          #rules .rules-list li:hover { color: #5b9bd5 !important; }
+
+          /* 页脚 */
+          footer { background: rgba(241,245,249,0.8) !important; color: #64748b !important; }
+        }
     </style>
 </head>
 
@@ -1129,10 +1254,9 @@
         </button>
         <nav class="nav-links" id="nav-links">
             <a href="#about">关于我们</a>
-            <a href="#poster">宣传海报</a>
             <a href="#events">品牌活动</a>
-	     <a href="#game">我们的游戏</a>
-            <a href="#team">队干风采</a>
+            <a href="#game">我们的游戏</a>
+            <a href="#team">干员风采</a>
             <a href="#awards">荣誉</a>
             <a href="#rules">队规</a>
             <a href="#join">加入我们</a>
@@ -1141,6 +1265,11 @@
 
     <!-- HERO -->
     <section id="hero">
+        <div class="hero-carousel" id="heroCarousel">
+            <div class="carousel-caption" id="carouselCaption"></div>
+            <div class="carousel-btn carousel-btn-left" id="carouselPrev">‹</div>
+            <div class="carousel-btn carousel-btn-right" id="carouselNext">›</div>
+        </div>
         <div class="hero-inner">
             <div class="hero-icon-ring">
                 <img src="assets/images/logo.png" alt="队徽" class="hero-logo" />
@@ -1177,36 +1306,16 @@
             </a>
             <div class="about-content">
                 <h3>以数模之名，探索无限可能</h3>
-                <p>揭阳第一中学数模队成立于2025年，是校党委领导、团委指导下的官方学术科技类校队，现有注册队干16人，预备队干10人。我们以「竞赛+学术+技术」三位一体为核心，累计获得国家级一等奖1项、国家级二等奖5项、国家级三等奖3项。</p>
+                <p>揭阳第一中学数模队是一支致力于提供数学建模学习与展示平台的校队。该队通过开展日常队课训练、举办大型校内活动及参与国家级赛事，助力营造浓厚的校内学术科创氛围，激发揭阳一中学子的求知欲与探索精神，使同学们在数学建模的过程中提高学科综合素养。</p>
                 <p>校队拥有独立的数学建模实验室，顶级的设备配置，为成员提供全天候科研环境。</p>
                 <div class="about-stat-row">
-                    <div class="about-stat"><span class="stat-num">16</span><span class="stat-label">注册队干</span></div>
-                    <div class="about-stat"><span class="stat-num">10</span><span class="stat-label">预备队干</span></div>
+                    <div class="about-stat"><span class="stat-num">16</span><span class="stat-label">注册干员</span></div>
+                    <div class="about-stat"><span class="stat-num">10</span><span class="stat-label">预备干员</span></div>
                     <div class="about-stat"><span class="stat-num">9+</span><span class="stat-label">国家级奖项</span></div>
                     <div class="about-stat"><span class="stat-num">1</span><span class="stat-label">独立实验室</span></div>
-<div class="about-stat"><span class="stat-num">1</span><span class="stat-label">发行游戏</span></div>
+                    <div class="about-stat"><span class="stat-num">1</span><span class="stat-label">发行游戏</span></div>
                     <div class="about-stat"><span class="stat-num">40~50</span><span class="stat-label">人/届招生</span></div>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 宣传海报 -->
-    <section id="poster">
-        <div class="section-header">
-            <span class="section-tag">· Posters ·</span>
-            <h2>招新海报一览</h2>
-            <div class="section-divider"></div>
-            <p class="section-subtitle">四大部门，总有一个适合你</p>
-        </div>
-        <div class="poster-masonry">
-            <div class="poster-frame">
-                <img src="assets/images/主宣传单.png" alt="主宣传单" loading="lazy" />
-                <div class="poster-label">主宣传单</div>
-            </div>
-            <div class="poster-frame">
-                <img src="assets/images/副宣传单.jpg" alt="详细宣传单" loading="lazy" />
-                <div class="poster-label">详细宣传单</div>
             </div>
         </div>
     </section>
@@ -1232,28 +1341,28 @@
     </section>
 
     <!-- 我们的游戏 -->
-<section id="game">
-  <div class="section-header">
-    <span class="section-tag">· Play ·</span>
-    <h2>游玩我们出品的游戏</h2>
-    <div class="section-divider"></div>
-    <p class="section-subtitle">数学与代码碰撞的创意小游戏，等你来挑战</p>
-  </div>
-  <div style="max-width:400px;margin:auto;text-align:center;">
-    <div style="background:var(--bg-card);border-radius:var(--radius-lg);padding:2rem;border:1px solid var(--border-card);">
-      <div style="font-size:3rem;margin-bottom:1rem;">🎲</div>
-      <h3 style="color:#fff;margin-bottom:0.5rem;">奇点监狱·AI失控</h3>
-      <p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:1.5rem;">逃脱数学的AI吧！</p>
-      <a href="game.html" class="btn btn-primary">进入下载游戏</a>
-    </div>
-  </div>
-</section>
+    <section id="game">
+        <div class="section-header">
+            <span class="section-tag">· Play ·</span>
+            <h2>游玩我们出品的游戏</h2>
+            <div class="section-divider"></div>
+            <p class="section-subtitle">数学与代码碰撞的创意小游戏，等你来挑战</p>
+        </div>
+        <div style="max-width:400px;margin:auto;text-align:center;">
+            <div style="background:var(--bg-card);border-radius:var(--radius-lg);padding:2rem;border:1px solid var(--border-card);">
+                <div style="font-size:3rem;margin-bottom:1rem;">🎲</div>
+                <h3 style="color:#fff;margin-bottom:0.5rem;">奇点监狱·AI失控</h3>
+                <p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:1.5rem;">逃脱这群数学赋能的AI！</p>
+                <a href="game.html" class="btn btn-primary">进入下载游戏</a>
+            </div>
+        </div>
+    </section>
 
     <!-- 队干风采 -->
     <section id="team">
         <div class="section-header">
             <span class="section-tag">· Members ·</span>
-            <h2>全员16人</h2>
+            <h2>正式干员16人</h2>
             <div class="section-divider"></div>
             <p class="section-subtitle">鼠标悬停卡片翻转，查看详细信息</p>
         </div>
@@ -1318,10 +1427,20 @@
     </footer>
 
     <script>
-        // ============ 导航栏滚动 ============
+        // 滚动控制导航栏显示/隐藏
+        let lastScrollTop = 0;
         const navbar = document.getElementById('navbar');
+        const scrollThreshold = 200; // 滚动超过200px才显示
+
         window.addEventListener('scroll', () => {
-            if (window.scrollY > 60) {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            if (scrollTop > scrollThreshold) {
+                navbar.classList.add('visible');
+            } else {
+                navbar.classList.remove('visible');
+            }
+            // 滚动时添加背景加深效果
+            if (scrollTop > 60) {
                 navbar.classList.add('scrolled');
             } else {
                 navbar.classList.remove('scrolled');
@@ -1363,7 +1482,6 @@
             { name: '林孝锶', title: '竞赛部长', dept: '竞赛部', said: '' },
             { name: '江恩跃', title: '成员组组长', dept: '竞赛部', said: '' },
             { name: '黄倍鑫', title: '成员组组长', dept: '竞赛部', said: '“权威”' },
-            
         ];
 
         const grid = document.getElementById('team-grid');
@@ -1409,6 +1527,90 @@
             card.innerHTML = `<img src="${a.src}" alt="荣誉证书" loading="lazy">`;
             awardsStage.appendChild(card);
         });
+
+        // ============ 首页背景轮播 ============
+        const carouselImages = [
+            { url: "assets/images/activities/首届数学文化节活动现场.jpg", caption: "首届数学文化节活动现场" },
+            { url: "assets/images/activities/队内干员开会.jpg", caption: "队内干员开会" },
+            { url: "assets/images/activities/数学实验室设备.JPG", caption: "数学实验室设备" },
+            { url: "assets/images/activities/数学建模论文写作指导.jpg", caption: "数学建模论文写作指导" },
+            { url: "assets/images/activities/数学建模论文撰写.jpg", caption: "数学建模论文撰写" },
+            { url: "assets/images/activities/日常队课训练.jpg", caption: "日常队课训练" }
+        ];
+
+        let currentIndex = 0;
+        let intervalId = null;
+        const carouselContainer = document.getElementById('heroCarousel');
+        const captionEl = document.getElementById('carouselCaption');
+        const prevBtn = document.getElementById('carouselPrev');
+        const nextBtn = document.getElementById('carouselNext');
+
+        function buildSlides() {
+            carouselContainer.querySelectorAll('.carousel-slide').forEach(el => el.remove());
+            if (!carouselImages.length) {
+                const defaultDiv = document.createElement('div');
+                defaultDiv.className = 'carousel-slide active';
+                defaultDiv.style.backgroundImage = `url('assets/images/logo.png')`;
+                defaultDiv.style.backgroundSize = 'cover';
+                defaultDiv.style.backgroundPosition = 'center';
+                carouselContainer.appendChild(defaultDiv);
+                captionEl.innerText = '📸 活动精彩瞬间';
+                return;
+            }
+            carouselImages.forEach((img, idx) => {
+                const slide = document.createElement('div');
+                slide.className = 'carousel-slide' + (idx === currentIndex ? ' active' : '');
+                slide.style.backgroundImage = `url('${img.url}')`;
+                slide.style.backgroundSize = 'cover';
+                slide.style.backgroundPosition = 'center';
+                carouselContainer.appendChild(slide);
+            });
+            if(carouselImages[currentIndex]) captionEl.innerText = carouselImages[currentIndex].caption;
+            else captionEl.innerText = '活动掠影';
+        }
+
+        function showSlide(index) {
+            const slides = document.querySelectorAll('.carousel-slide');
+            if (!slides.length) return;
+            slides[currentIndex].classList.remove('active');
+            currentIndex = (index + slides.length) % slides.length;
+            slides[currentIndex].classList.add('active');
+            if(carouselImages[currentIndex]) captionEl.innerText = carouselImages[currentIndex].caption;
+            // 重置自动轮播计时
+            resetAutoPlay();
+        }
+
+        function nextSlide() {
+            showSlide(currentIndex + 1);
+        }
+
+        function prevSlide() {
+            showSlide(currentIndex - 1);
+        }
+
+        function startAutoPlay() {
+            if (intervalId) clearInterval(intervalId);
+            if (carouselImages.length <= 1) return;
+            intervalId = setInterval(() => {
+                nextSlide();
+            }, 4800);
+        }
+
+        function resetAutoPlay() {
+            if (intervalId) {
+                clearInterval(intervalId);
+                intervalId = null;
+            }
+            startAutoPlay();
+        }
+
+        // 绑定按钮事件
+        if (prevBtn) prevBtn.addEventListener('click', (e) => { e.stopPropagation(); prevSlide(); });
+        if (nextBtn) nextBtn.addEventListener('click', (e) => { e.stopPropagation(); nextSlide(); });
+
+        // 初始化轮播
+        buildSlides();
+        startAutoPlay();
     </script>
 </body>
 </html>

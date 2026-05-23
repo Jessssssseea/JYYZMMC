@@ -65,7 +65,7 @@
             scroll-behavior: smooth;
         }
 
-        /* ===== 静态网格背景 (无动画，大幅降低重绘) ===== */
+        /* ===== 静态网格背景 ===== */
         #grid-bg {
             position: fixed;
             top: 0;
@@ -79,10 +79,9 @@
                 linear-gradient(rgba(91, 155, 213, 0.12) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(91, 155, 213, 0.12) 1px, transparent 1px);
             background-size: 55px 55px;
-            /* 静态背景，不再移动，彻底解决滚动时网格动画造成的卡顿 */
         }
 
-        /* ===== 静态光晕 (无动画 + 降低模糊开销) ===== */
+        /* ===== 静态光晕 ===== */
         .glow-orb {
             position: fixed;
             width: 550px;
@@ -107,7 +106,7 @@
             opacity: 0.07;
         }
 
-        /* 主容器 — 使用块级自然滚动 */
+        /* 主容器 */
         .game-wrapper {
             position: relative;
             z-index: 2;
@@ -152,7 +151,7 @@
             transform: translateX(-3px);
         }
 
-        /* 卡片样式 — 移除高开销的 backdrop-filter 模糊，改用纯色半透明 + 微质感 */
+        /* 卡片样式 */
         .card {
             background: var(--bg-card);
             border-radius: var(--radius-xl);
@@ -182,8 +181,8 @@
         .game-icon {
             width: 100px;
             height: 100px;
-            border-radius: 50%;      /* 关键修改：从固定圆角改为50%圆形 */
-            object-fit: cover;       /* 可选：让图片填满圆形区域而不变形（原为 contain） */
+            border-radius: 50%;
+            object-fit: cover;
             box-shadow: 0 0 28px rgba(91, 155, 213, 0.25);
             object-fit: contain;
             background: rgba(0, 0, 0, 0.4);
@@ -226,7 +225,7 @@
             font-weight: 600;
         }
 
-        /* 截图网格 - 性能友好 hover */
+        /* 截图网格 */
         .screenshots-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -451,7 +450,7 @@
             backface-visibility: hidden;
         }
 
-        /* 改善滚动条样式（可选，优雅但不影响性能） */
+        /* 改善滚动条样式 */
         ::-webkit-scrollbar {
             width: 6px;
             background: #0f1420;
@@ -465,18 +464,130 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #4a6e96;
         }
+
+        /* 深浅色自适应 */
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg-root: #f8fafc;
+                --bg-surface: #ffffff;
+                --bg-card: rgba(255, 255, 255, 0.95);
+                --bg-elevated: #f1f5f9;
+                --text-primary: #0f172a;
+                --text-secondary: #334155;
+                --text-muted: #64748b;
+                --border-subtle: rgba(0, 0, 0, 0.06);
+                --border-card: rgba(0, 0, 0, 0.1);
+                --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+                --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.12);
+                --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.15);
+                --shadow-glow: 0 0 60px rgba(91, 155, 213, 0.1);
+            }
+
+            body {
+                background: var(--bg-root) !important;
+            }
+
+            /* 加粗文本适配 */
+            .intro-text strong {
+                color: var(--text-primary) !important;
+            }
+
+            /* 网格、光晕背景 */
+            #grid-bg {
+                background-image:
+                    linear-gradient(rgba(91, 155, 213, 0.08) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(91, 155, 213, 0.08) 1px, transparent 1px);
+                opacity: 0.15;
+            }
+            .glow-orb {
+                opacity: 0.06;
+            }
+            .glow-orb.second {
+                opacity: 0.05;
+            }
+
+            /* 返回按钮 */
+            .back-link {
+                background: rgba(241, 245, 249, 0.9) !important;
+                color: var(--text-secondary) !important;
+            }
+            .back-link:hover {
+                color: var(--accent-primary) !important;
+            }
+
+            /* 标题渐变 */
+            h1 {
+                background: linear-gradient(135deg, #1e293b, #5b9bd5);
+                -webkit-background-clip: text !important;
+                background-clip: text !important;
+                -webkit-text-fill-color: transparent !important;
+            }
+
+            /* AI卡片背景 */
+            .ai-card {
+                background: var(--bg-elevated) !important;
+            }
+
+            /* AI卡片标题文字 */
+            .ai-card h4 {
+                color: var(--text-primary) !important;
+            }
+
+            /* 图片容器底色 */
+            .screenshot-item, .tech-diagram {
+                background: #f8fafc !important;
+            }
+
+            /* 普通按钮 */
+            .btn {
+                color: var(--text-primary) !important;
+                background: rgba(91, 155, 213, 0.1) !important;
+                border-color: rgba(91, 155, 213, 0.3) !important;
+            }
+            .btn:hover {
+                background: rgba(91, 155, 213, 0.2) !important;
+            }
+
+            /* 下载主按钮 */
+            .btn-primary {
+                background: linear-gradient(115deg, #4e89c4, #366fa8) !important;
+                color: #ffffff !important;
+                box-shadow: 0 6px 18px rgba(91, 155, 213, 0.22) !important;
+            }
+            .btn-primary:hover {
+                box-shadow: 0 8px 24px rgba(91, 155, 213, 0.35) !important;
+                color: #000000 !important;
+            }
+
+            /* 禁用按钮 */
+            .btn-disabled {
+                background: #e2e8f0 !important;
+                color: var(--text-muted) !important;
+            }
+
+            /* 浅色滚动条 */
+            ::-webkit-scrollbar {
+                background: #f1f5f9 !important;
+            }
+            ::-webkit-scrollbar-thumb {
+                background: #94a3b8 !important;
+            }
+            ::-webkit-scrollbar-thumb:hover {
+                background: #5b9bd5 !important;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- 静态背景层 无动画 -->
+    <!-- 静态背景层 -->
     <div id="grid-bg"></div>
-    <!-- 固定光晕 已去除动画 -->
+    <!-- 固定光晕 -->
     <div class="glow-orb"></div>
     <div class="glow-orb second"></div>
 
     <div class="game-wrapper">
         <!-- 返回主页链接 -->
-        <a href="index.html" class="back-link">
+        <a href="index.html#game" class="back-link">
             <span class="arrow">👈</span> 返回主页
         </a>
 
@@ -569,13 +680,13 @@
 
     <script>
         (function() {
-            // 为所有截图增加轻量级点击预览（不影响性能，新窗口打开大图）
+            // 为所有截图增加轻量级点击预览
             const screenshots = document.querySelectorAll('.screenshot-item img');
             if (screenshots.length) {
                 screenshots.forEach(img => {
                     img.addEventListener('click', (e) => {
                         e.stopPropagation();
-                        // 使用原生新窗口打开图片，不引入复杂组件，保证滑动体验
+                        // 使用原生新窗口打开图片
                         window.open(img.src, '_blank');
                     });
                     // 增加无障碍提示
@@ -583,9 +694,6 @@
                     img.style.cursor = 'pointer';
                 });
             }
-
-            // 可选：轻微优化滚动性能，避免被动监听器（本页面无主动滚动监听，无需额外处理）
-            // 确保任何卡顿风险降低：无requestAnimationFrame持续动画，无setInterval
         })();
     </script>
 </body>
