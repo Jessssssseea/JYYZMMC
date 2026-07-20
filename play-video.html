@@ -345,8 +345,9 @@
 
     <!-- 主播放器区域 -->
     <div class="player-wrapper">
-        <a href="index.html#about" class="back-link">
-            <span class="arrow">👈</span> 返回官网
+        <!-- 返回主页链接 -->
+        <a href="#" id="dynamicBackLink" class="back-link">
+            <span class="arrow">👈</span> <span id="backText">返回主页</span>
         </a>
 
         <div class="video-card">
@@ -388,6 +389,41 @@
                 }
             }
         });
+
+        // 智能返回
+        (function() {
+            // 读取 sessionStorage 中的来源标识
+            const source = sessionStorage.getItem('redirect_source');
+            
+            // 获取返回链接元素
+            const backLink = document.getElementById('dynamicBackLink');
+            const backText = document.getElementById('backText');
+
+            // 默认值
+            let returnUrl = 'index.html#about';
+            let displayText = '返回主页';
+
+            // 根据来源构建返回地址
+            if (source === 'index') {
+                returnUrl = 'index.html#about';
+                displayText = '返回主页';
+            } else if (source === 'newdesign') {
+                returnUrl = 'index_newdesign.html#about';
+                displayText = '返回新主页';
+            }
+
+            // 更新链接和文字
+            if (backLink) {
+                backLink.href = returnUrl;
+            }
+            if (backText) {
+                backText.textContent = displayText;
+            }
+
+            // 控制台调试
+            console.log('[返回检测] 来源标识:', source || '无');
+            console.log('[返回检测] 返回地址:', returnUrl);
+        })();
     </script>
 </body>
 </html>
