@@ -1,0 +1,1734 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>揭阳第一中学数模队 · 官网</title>
+    <meta name="description" content="揭阳一中官方数学建模校队，全员队干风采、宣传片、招新海报一站式浏览。"/>
+    <link rel="icon" href="assets/images/logo.png"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Noto+Sans+SC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* ============================================================
+                   ROOT VARIABLES · 三色系统
+                   ============================================================ */
+        :root {
+            --color-bg: #faf9f5;
+            --color-surface: #ffffff;
+            --color-surface-alt: #f1f0ea;
+            --color-text-primary: #0f172a;
+            --color-text-secondary: #334155;
+            --color-text-muted: #64748b;
+            --color-border: #e2e8f0;
+            --color-shadow: rgba(15, 23, 42, 0.08);
+
+            /* 主色：青绿 #0ff798 */
+            --color-primary: #0ff798;
+            --color-primary-hover: #0ad97f;
+            --color-primary-dim: rgba(15, 247, 152, 0.12);
+
+            /* 点缀色：暖陶土 #d97757 */
+            --color-accent-warm: #d97757;
+            --color-accent-warm-hover: #c46542;
+            --color-accent-warm-dim: rgba(217, 119, 87, 0.12);
+
+            /* 辅助色：蓝 #2563eb */
+            --color-secondary: #2563eb;
+            --color-secondary-hover: #1d4ed8;
+            --color-secondary-dim: rgba(37, 99, 235, 0.10);
+
+            --font-display: 'Inter', 'Noto Sans SC', system-ui, sans-serif;
+            --font-body: 'Noto Sans SC', 'Inter', system-ui, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Noto Sans SC', monospace;
+
+            --space-xs: 0.5rem;
+            --space-sm: 1rem;
+            --space-md: 1.5rem;
+            --space-lg: 3rem;
+            --space-xl: 5rem;
+
+            --radius-sm: 6px;
+            --radius: 12px;
+            --radius-lg: 20px;
+
+            --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ============================================================
+                   RESET & BASE
+                   ============================================================ */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--color-bg);
+            color: var(--color-text-primary);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* ============================================================
+                   UTILITY
+                   ============================================================ */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--space-md);
+        }
+
+        .section-tag {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--color-primary);
+            background: var(--color-primary-dim);
+            padding: 0.2rem 0.8rem;
+            border-radius: 50px;
+            margin-bottom: var(--space-sm);
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: clamp(1.8rem, 4vw, 2.6rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--color-text-primary);
+            line-height: 1.2;
+        }
+
+        .section-subtitle {
+            font-size: 1rem;
+            color: var(--color-text-secondary);
+            max-width: 560px;
+            margin: var(--space-xs) auto 0;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-lg);
+            align-items: center;
+        }
+
+        /* ============================================================
+                   BUTTONS · 三色按钮体系
+                   ============================================================ */
+        .btn {
+            display: inline-block;
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 0.6rem 1.8rem;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: var(--transition-smooth);
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: #0f172a;
+            box-shadow: 0 4px 12px rgba(15, 247, 152, 0.35);
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-hover);
+            box-shadow: 0 8px 24px rgba(15, 247, 152, 0.45);
+            transform: translateY(-2px);
+        }
+
+        .btn-warm {
+            background: var(--color-accent-warm);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(217, 119, 87, 0.30);
+        }
+
+        .btn-warm:hover {
+            background: var(--color-accent-warm-hover);
+            box-shadow: 0 8px 24px rgba(217, 119, 87, 0.40);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--color-secondary);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+        }
+
+        .btn-secondary:hover {
+            background: var(--color-secondary-hover);
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.35);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--color-text-primary);
+            border-color: var(--color-border);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+            background: var(--color-primary-dim);
+        }
+
+        .btn-outline-warm {
+            background: transparent;
+            color: var(--color-text-primary);
+            border-color: var(--color-border);
+        }
+
+        .btn-outline-warm:hover {
+            border-color: var(--color-accent-warm);
+            color: var(--color-accent-warm);
+            background: var(--color-accent-warm-dim);
+        }
+
+        /* ============================================================
+                   HEADER / NAV
+                   ============================================================ */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 0.8rem 0;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+            transition: var(--transition-smooth);
+        }
+
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            text-decoration: none;
+            color: var(--color-text-primary);
+        }
+
+        .nav-logo {
+            height: 36px;
+            width: auto;
+        }
+
+        .nav-brand-text {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-brand-text span {
+            color: var(--color-primary);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 0.2rem;
+        }
+
+        .nav-links a {
+            font-family: var(--font-display);
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 50px;
+            transition: var(--transition-smooth);
+        }
+
+        .nav-links a:hover {
+            color: var(--color-text-primary);
+            background: var(--color-surface-alt);
+        }
+
+        .nav-links a.active-link {
+            color: var(--color-primary);
+            background: var(--color-primary-dim);
+        }
+
+        .nav-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.2rem;
+        }
+
+        .nav-toggle span {
+            display: block;
+            width: 22px;
+            height: 2px;
+            background: var(--color-text-primary);
+            border-radius: 2px;
+            transition: var(--transition-smooth);
+        }
+
+        /* ============================================================
+                   HERO · 三色渐变背景
+                   ============================================================ */
+        #hero {
+            padding: 8rem 0 4rem;
+            background: linear-gradient(160deg, #faf9f5 0%, #edfcf3 50%, #fdf5f0 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #hero .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-lg);
+            align-items: center;
+        }
+
+        .hero-content {
+            z-index: 2;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: var(--color-primary-dim);
+            color: var(--color-primary);
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 0.2rem 0.8rem;
+            border-radius: 50px;
+            margin-bottom: var(--space-sm);
+        }
+
+        .hero-content h1 {
+            font-family: var(--font-display);
+            font-size: clamp(2.2rem, 5vw, 3.4rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-sm);
+        }
+
+        .hero-content h1 .highlight-green {
+            color: var(--color-primary);
+        }
+
+        .hero-content h1 .highlight-warm {
+            color: var(--color-accent-warm);
+        }
+
+        .hero-content h1 .highlight-blue {
+            color: var(--color-secondary);
+        }
+
+        .hero-content p {
+            font-size: 1.1rem;
+            color: var(--color-text-secondary);
+            max-width: 480px;
+            margin-bottom: var(--space-md);
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: var(--space-lg);
+            margin-top: var(--space-md);
+            padding-top: var(--space-md);
+            border-top: 1px solid var(--color-border);
+        }
+
+        .hero-stat .number {
+            font-family: var(--font-mono);
+            font-size: 1.6rem;
+            font-weight: 600;
+            display: block;
+            line-height: 1.2;
+        }
+
+        .hero-stat .number.green {
+            color: var(--color-primary);
+        }
+        .hero-stat .number.warm {
+            color: var(--color-accent-warm);
+        }
+        .hero-stat .number.blue {
+            color: var(--color-secondary);
+        }
+
+        .hero-stat .label {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .hero-visual {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hero-code-block {
+            background: var(--color-text-primary);
+            color: #e2e8f0;
+            padding: 1.5rem 2rem;
+            border-radius: var(--radius);
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            line-height: 1.8;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 20px 60px rgba(15, 23, 42, 0.15);
+            position: relative;
+        }
+
+        .hero-code-block .code-comment {
+            color: var(--color-accent-warm);
+        }
+
+        .hero-code-block .code-keyword {
+            color: var(--color-primary);
+        }
+
+        .hero-code-block .code-string {
+            color: var(--color-secondary);
+        }
+
+        .hero-code-block .code-function {
+            color: #e879f9;
+        }
+
+        .floating-badge {
+            position: absolute;
+            bottom: -1rem;
+            right: -1rem;
+            background: #fff;
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: var(--color-text-primary);
+        }
+
+        .floating-badge .badge-green {
+            color: var(--color-primary);
+        }
+        .floating-badge .badge-warm {
+            color: var(--color-accent-warm);
+        }
+
+        /* ============================================================
+                   SECTION BASE
+                   ============================================================ */
+        section {
+            padding: var(--space-xl) 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: var(--space-lg);
+        }
+
+        .section-divider {
+            width: 48px;
+            height: 3px;
+            border-radius: 2px;
+            margin: var(--space-sm) auto var(--space-sm);
+            background: linear-gradient(90deg, var(--color-primary), var(--color-secondary), var(--color-accent-warm));
+        }
+
+        /* ============================================================
+                   ABOUT
+                   ============================================================ */
+        #about .about-text p {
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-sm);
+            font-size: 0.95rem;
+        }
+
+        .about-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: var(--space-sm);
+            margin-top: var(--space-md);
+        }
+
+        .about-stat-item {
+            background: var(--color-surface);
+            padding: var(--space-sm);
+            border-radius: var(--radius);
+            text-align: center;
+            border: 1px solid var(--color-border);
+            transition: var(--transition-smooth);
+        }
+
+        .about-stat-item:hover {
+            border-color: var(--color-primary);
+            box-shadow: 0 4px 12px var(--color-shadow);
+        }
+
+        .about-stat-item .num {
+            font-family: var(--font-mono);
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            display: block;
+        }
+
+        .about-stat-item .lbl {
+            font-size: 0.7rem;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .about-media {
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: 0 12px 40px var(--color-shadow);
+            transition: var(--transition-smooth);
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+        }
+
+        .about-media img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .about-media .play-overlay {
+            padding: var(--space-sm);
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            font-family: var(--font-display);
+            font-weight: 500;
+            color: var(--color-text-secondary);
+        }
+
+        .about-media .play-overlay .play-icon {
+            color: var(--color-primary);
+        }
+
+        /* ============================================================
+                   EVENTS
+                   ============================================================ */
+        #events .events-list {
+            max-width: 640px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+
+        .event-item {
+            background: var(--color-surface);
+            padding: var(--space-md);
+            border-radius: var(--radius);
+            border: 1px solid var(--color-border);
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+
+        .event-item:hover {
+            border-color: var(--color-secondary);
+            box-shadow: 0 4px 16px var(--color-shadow);
+            transform: translateX(4px);
+        }
+
+        .event-item .icon {
+            font-size: 1.8rem;
+            flex-shrink: 0;
+        }
+
+        .event-item .content .title {
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+
+        .event-item .content .desc {
+            font-size: 0.85rem;
+            color: var(--color-text-muted);
+        }
+
+        /* ============================================================
+                   GALLERY · 全新轮播板块
+                   ============================================================ */
+        .carousel-container {
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: 0 12px 48px var(--color-shadow);
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+        }
+
+        .carousel-track {
+            display: flex;
+            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            will-change: transform;
+        }
+
+        .carousel-slide {
+            flex: 0 0 100%;
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+            background: var(--color-surface-alt);
+        }
+
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: var(--transition-smooth);
+        }
+
+        .carousel-slide:hover img {
+            transform: scale(1.02);
+        }
+
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: var(--color-text-primary);
+            font-size: 1.4rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            user-select: none;
+        }
+
+        .carousel-btn:hover {
+            background: #ffffff;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        .carousel-btn:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+
+        .carousel-prev {
+            left: 16px;
+        }
+
+        .carousel-next {
+            right: 16px;
+        }
+
+        .carousel-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 0 18px;
+            background: var(--color-surface);
+            border-top: 1px solid var(--color-border);
+        }
+
+        .carousel-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--color-border);
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            border: none;
+            padding: 0;
+        }
+
+        .carousel-dot.active {
+            background: var(--color-primary);
+            box-shadow: 0 0 12px rgba(15, 247, 152, 0.4);
+            transform: scale(1.15);
+        }
+
+        .carousel-dot:hover {
+            background: var(--color-primary);
+            opacity: 0.7;
+        }
+
+        .carousel-caption-label {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            color: #fff;
+            padding: 0.3rem 1.2rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-family: var(--font-mono);
+            letter-spacing: 0.04em;
+            white-space: nowrap;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            pointer-events: none;
+            z-index: 5;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .carousel-caption-label.visible {
+            opacity: 1;
+        }
+
+        @media (max-width: 640px) {
+            .carousel-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 1rem;
+            }
+            .carousel-prev {
+                left: 8px;
+            }
+            .carousel-next {
+                right: 8px;
+            }
+            .carousel-caption-label {
+                bottom: 68px;
+                font-size: 0.6rem;
+                padding: 0.15rem 0.8rem;
+                white-space: normal;
+            }
+            .carousel-dots {
+                padding: 10px 0 14px;
+            }
+            .carousel-dot {
+                width: 8px;
+                height: 8px;
+            }
+        }
+
+        /* ============================================================
+                   GAME
+                   ============================================================ */
+        #game .game-card {
+            max-width: 400px;
+            margin: 0 auto;
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            text-align: center;
+            border: 1px solid var(--color-border);
+            box-shadow: 0 8px 24px var(--color-shadow);
+            transition: var(--transition-smooth);
+        }
+
+        #game .game-card:hover {
+            border-color: var(--color-accent-warm);
+            box-shadow: 0 12px 40px var(--color-shadow);
+        }
+
+        #game .game-card .icon {
+            font-size: 3rem;
+            margin-bottom: var(--space-sm);
+        }
+
+        #game .game-card h3 {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+
+        #game .game-card h3 .highlight-warm {
+            color: var(--color-accent-warm);
+        }
+
+        #game .game-card p {
+            color: var(--color-text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: var(--space-md);
+        }
+
+        /* ============================================================
+                   TEAM · 翻转卡片
+                   ============================================================ */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+            gap: var(--space-md);
+            perspective: 1200px;
+        }
+
+        .member-card {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 3/4;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border-radius: var(--radius);
+        }
+
+        .member-card.revealed {
+            transform: rotateY(180deg);
+        }
+
+        .member-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: var(--radius);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border: 1px solid var(--color-border);
+            background: var(--color-surface);
+            box-shadow: 0 4px 12px var(--color-shadow);
+        }
+
+        .member-front img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition-smooth);
+        }
+
+        .member-card:hover .member-front img {
+            transform: scale(1.05);
+        }
+
+        .member-back {
+            transform: rotateY(180deg);
+            background: linear-gradient(145deg, #ffffff, #f1f0ea);
+            padding: 1.2rem;
+            gap: 0.2rem;
+            border-color: var(--color-primary);
+        }
+
+        .member-back h3 {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--color-text-primary);
+            letter-spacing: 0.04em;
+            margin-bottom: 0.1rem;
+        }
+
+        .member-back .role-chip {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--color-secondary);
+            background: var(--color-secondary-dim);
+            padding: 0.1rem 0.7rem;
+            border-radius: 50px;
+            border: 1px solid rgba(37, 99, 235, 0.1);
+        }
+
+        .member-back .dept-tag {
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-top: 0.1rem;
+        }
+
+        .member-back .motto {
+            font-size: 0.7rem;
+            color: var(--color-text-secondary);
+            font-style: italic;
+            margin-top: 0.5rem;
+            line-height: 1.4;
+            max-height: 70px;
+            overflow-y: auto;
+            padding: 0 0.2rem;
+        }
+
+        /* ============================================================
+                   AWARDS · 悬停展开
+                   ============================================================ */
+        .awards-stage {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 380px;
+            position: relative;
+            perspective: 1200px;
+        }
+
+        .loot-card {
+            position: absolute;
+            width: 260px;
+            height: 180px;
+            border-radius: var(--radius);
+            border: 1px solid var(--color-border);
+            box-shadow: 0 8px 24px var(--color-shadow);
+            overflow: hidden;
+            transition: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform-origin: 50% 100%;
+            background: var(--color-surface);
+            cursor: pointer;
+        }
+
+        .loot-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none;
+            transition: var(--transition-smooth);
+        }
+
+        .awards-stage:hover .loot-card {
+            transform: rotate(calc(var(--i) * 4deg)) translate(calc(var(--i) * 85px), -30px);
+        }
+
+        .awards-stage .loot-card:hover {
+            border-color: var(--color-accent-warm);
+            box-shadow: 0 0 40px rgba(217, 119, 87, 0.25);
+            z-index: 10;
+        }
+
+        /* ============================================================
+                   RULES
+                   ============================================================ */
+        #rules .rules-panel {
+            max-width: 680px;
+            margin: 0 auto;
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            border: 1px solid var(--color-border);
+            box-shadow: 0 8px 24px var(--color-shadow);
+        }
+
+        .rules-list {
+            list-style: none;
+            counter-reset: rule-counter;
+            padding: 0;
+        }
+
+        .rules-list li {
+            counter-increment: rule-counter;
+            padding: 0.8rem 0 0.8rem 3.2rem;
+            position: relative;
+            border-bottom: 1px solid var(--color-border);
+            color: var(--color-text-secondary);
+            font-size: 0.9rem;
+            transition: var(--transition-smooth);
+        }
+
+        .rules-list li:last-child {
+            border-bottom: none;
+        }
+
+        .rules-list li::before {
+            content: '0' counter(rule-counter);
+            position: absolute;
+            left: 0;
+            top: 0.7rem;
+            width: 32px;
+            height: 32px;
+            background: var(--color-secondary-dim);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-mono);
+            font-weight: 600;
+            font-size: 0.7rem;
+            color: var(--color-secondary);
+            border: 1px solid rgba(37, 99, 235, 0.15);
+        }
+
+        .rules-list li:hover {
+            color: var(--color-text-primary);
+        }
+
+        .rules-list li:hover::before {
+            background: rgba(37, 99, 235, 0.15);
+        }
+
+        /* ============================================================
+                   JOIN
+                   ============================================================ */
+        #join .join-panel {
+            max-width: 640px;
+            margin: 0 auto;
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            text-align: center;
+            border: 1px solid var(--color-border);
+            box-shadow: 0 8px 24px var(--color-shadow);
+        }
+
+        #join .join-panel h3 {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+
+        #join .join-panel h3 .highlight-warm {
+            color: var(--color-accent-warm);
+        }
+
+        #join .join-panel p {
+            color: var(--color-text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: var(--space-sm);
+        }
+
+        .join-buttons {
+            display: flex;
+            gap: var(--space-sm);
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: var(--space-md);
+        }
+
+        /* ============================================================
+                   FOOTER
+                   ============================================================ */
+        footer {
+            background: var(--color-text-primary);
+            color: rgba(255, 255, 255, 0.6);
+            padding: var(--space-lg) 0;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        footer .footer-accent-green {
+            color: var(--color-primary);
+            font-weight: 500;
+        }
+
+        footer .footer-accent-warm {
+            color: var(--color-accent-warm);
+            font-weight: 500;
+        }
+
+        footer p {
+            font-size: 0.8rem;
+            font-family: var(--font-mono);
+            letter-spacing: 0.04em;
+        }
+
+        /* ============================================================
+                   FLOAT BUTTON
+                   ============================================================ */
+        #float-apply {
+            position: fixed;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--color-secondary);
+            color: #fff;
+            padding: 0.8rem 0.4rem;
+            border-radius: 6px 0 0 6px;
+            writing-mode: vertical-rl;
+            text-decoration: none;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.8rem;
+            letter-spacing: 0.06em;
+            box-shadow: -4px 0 20px rgba(37, 99, 235, 0.30);
+            transition: var(--transition-smooth);
+            z-index: 999;
+        }
+
+        #float-apply:hover {
+            background: var(--color-secondary-hover);
+            padding-right: 0.8rem;
+        }
+
+        /* ============================================================
+                   RESPONSIVE
+                   ============================================================ */
+        @media (max-width: 1024px) {
+            #hero .container {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-content p {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .hero-stats {
+                justify-content: center;
+            }
+
+            .hero-visual {
+                order: -1;
+            }
+
+            .hero-code-block {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: rgba(255, 255, 255, 0.98);
+                flex-direction: column;
+                padding: var(--space-md);
+                border-bottom: 1px solid var(--color-border);
+                gap: 0.1rem;
+            }
+
+            .nav-links.open {
+                display: flex;
+            }
+
+            .nav-toggle {
+                display: flex;
+            }
+
+            .grid-2 {
+                grid-template-columns: 1fr;
+                gap: var(--space-md);
+            }
+
+            .team-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+
+            .awards-stage {
+                height: 280px;
+            }
+            .loot-card {
+                width: 160px;
+                height: 112px;
+            }
+            .awards-stage:hover .loot-card {
+                transform: rotate(calc(var(--i) * 3deg)) translate(calc(var(--i) * 35px), -15px);
+            }
+
+            #float-apply {
+                padding: 0.6rem 0.3rem;
+                font-size: 0.7rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-stats {
+                flex-direction: column;
+                gap: var(--space-sm);
+                align-items: center;
+            }
+
+            .join-buttons .btn {
+                width: 100%;
+                text-align: center;
+            }
+
+            .team-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: var(--space-sm);
+            }
+            .member-card {
+                aspect-ratio: 3/4;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================================
+    NAVBAR
+    ============================================================ -->
+    <header class="navbar" id="navbar">
+        <div class="container">
+            <a href="#hero" class="nav-brand">
+                <img src="assets/images/logo.png" class="nav-logo" alt="队徽" />
+                <span class="nav-brand-text">揭阳第一中学 <span>数模队</span></span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="菜单">
+                <span></span><span></span><span></span>
+            </button>
+            <nav class="nav-links" id="navLinks">
+                <a href="#about">关于我们</a>
+                <a href="#events">品牌活动</a>
+                <a href="#gallery">活动掠影</a>
+                <a href="#game">我们的游戏</a>
+                <a href="#team">干员风采</a>
+                <a href="#awards">荣誉</a>
+                <a href="#rules">队规</a>
+                <a href="#join">加入我们</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ============================================================
+    HERO
+    ============================================================ -->
+    <section id="hero">
+        <div class="container">
+            <div class="hero-content">
+                <span class="hero-badge">⚡ 教育部白名单赛事</span>
+                <h1>
+                    揭阳第一中学
+                    <span class="highlight-blue">数模队</span>
+                </h1>
+                <p>Model the World · Code the Future</p>
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <span class="number green">16</span>
+                        <span class="label">注册干员</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="number warm">9+</span>
+                        <span class="label">国家级奖项</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="number blue">1</span>
+                        <span class="label">独立实验室</span>
+                    </div>
+                </div>
+                <div style="margin-top: var(--space-md); display: flex; gap: var(--space-sm); flex-wrap: wrap;">
+                    <a href="#join" class="btn btn-primary">加入我们</a>
+                    <a href="#about" class="btn btn-outline">了解更多</a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="hero-code-block">
+                    <div><span class="code-comment"># 数模队“核心算法”</span></div>
+                    <div><span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np</div>
+                    <div><span class="code-keyword">from</span> team <span class="code-keyword">import</span> <span class="code-function">Operatives</span></div>
+                    <div><br/></div>
+                    <div><span class="code-keyword">def</span> <span class="code-function">solve_problem</span>(data):</div>
+                    <div>&nbsp;&nbsp;&nbsp;&nbsp;model = <span class="code-function">LinearRegression</span>()</div>
+                    <div>&nbsp;&nbsp;&nbsp;&nbsp;result = model.<span class="code-function">fit</span>(data)</div>
+                    <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">return</span> result.<span class="code-function">predict</span>()</div>
+                    <div><br/></div>
+                    <div><span class="code-comment"># 输出：揭阳一中数模队</span></div>
+                    <div><span class="code-function">print</span>(<span class="code-string">"Hello, Modelers!"</span>)</div>
+                    <div class="floating-badge">🚀 <span class="badge-green">奇点</span> · <span class="badge-warm">行动</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+    ABOUT
+    ============================================================ -->
+    <section id="about">
+        <div class="container">
+            <div class="grid-2">
+                <div class="about-text">
+                    <span class="section-tag">· About Us ·</span>
+                    <h2 class="section-title">揭阳第一中学数模队</h2>
+                    <div style="width:48px; height:3px; background:var(--color-primary); border-radius:2px; margin: var(--space-sm) 0;"></div>
+                    <p>揭阳第一中学数模队是一支致力于提供数学建模学习与展示平台的校队。该队通过开展日常队课训练、举办大型校内活动及参与国家级赛事，助力营造浓厚的校内学术科创氛围，激发揭阳一中学子的求知欲与探索精神，使同学们在数学建模的过程中提高学科综合素养。</p>
+                    <p>校队拥有独立的数学建模实验室，顶级的设备配置，为成员提供全天候科研环境。</p>
+                    <div class="about-stats-grid">
+                        <div class="about-stat-item"><span class="num">16</span><span class="lbl">注册干员</span></div>
+                        <div class="about-stat-item"><span class="num">10</span><span class="lbl">预备干员</span></div>
+                        <div class="about-stat-item"><span class="num">9+</span><span class="lbl">国家级奖项</span></div>
+                        <div class="about-stat-item"><span class="num">1</span><span class="lbl">独立实验室</span></div>
+                        <div class="about-stat-item"><span class="num">1</span><span class="lbl">制作游戏</span></div>
+                        <div class="about-stat-item"><span class="num">40~50</span><span class="lbl">人/届招生</span></div>
+                    </div>
+                </div>
+                <a href="play-video.html" class="about-media" title="点击播放官方宣传片">
+                    <img src="assets/images/hero-poster.png" alt="宣传片封面" loading="lazy" />
+                    <div class="play-overlay">
+                        <span class="play-icon" style="font-size:1rem;">▶</span>观看宣传片
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+    EVENTS
+    ============================================================ -->
+    <section id="events" style="background: var(--color-surface-alt);">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">· Events ·</span>
+                <h2 class="section-title">我们的节奏</h2>
+                <div class="section-divider"></div>
+                <p class="section-subtitle">从基础培训到年度成果展，步步为营</p>
+            </div>
+            <div class="events-list">
+                <div class="event-item">
+                    <span class="icon">📘</span>
+                    <div class="content">
+                        <div class="title">每周基础培训</div>
+                        <div class="desc">数学建模理论 / Python / MATLAB / LaTeX 系统教学</div>
+                    </div>
+                </div>
+                <div class="event-item">
+                    <span class="icon">🧠</span>
+                    <div class="content">
+                        <div class="title">数学文化节</div>
+                        <div class="desc">3.14派节！</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+    GALLERY · 活动掠影轮播
+    ============================================================ -->
+    <section id="gallery">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">· Gallery ·</span>
+                <h2 class="section-title">活动掠影</h2>
+                <div class="section-divider"></div>
+                <p class="section-subtitle">记录我们成长的每一个瞬间</p>
+            </div>
+            <div class="carousel-container">
+                <div class="carousel-track" id="carouselTrack">
+                    <!-- 由 JavaScript 动态生成 -->
+                </div>
+                <button class="carousel-btn carousel-prev" id="carouselPrev" aria-label="上一张">‹</button>
+                <button class="carousel-btn carousel-next" id="carouselNext" aria-label="下一张">›</button>
+                <div class="carousel-caption-label" id="carouselCaption">—</div>
+                <div class="carousel-dots" id="carouselDots"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+    GAME
+    ============================================================ -->
+    <section id="game">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">· Play ·</span>
+                <h2 class="section-title">游玩我们制作的游戏</h2>
+                <div class="section-divider"></div>
+                <p class="section-subtitle">数学与代码碰撞的创意小游戏，等你来挑战</p>
+            </div>
+            <div class="game-card">
+                <div class="icon">🎲</div>
+                <h3><span class="highlight-warm">奇点监狱</span> · AI失控</h3>
+                <p>逃脱这群数学赋能的AI！</p>
+                <a href="game.html" class="btn btn-warm">进入下载游戏</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+    TEAM · 翻转卡片
+    ============================================================ -->
+    <section id="team" style="background: var(--color-surface-alt);">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">· Members ·</span>
+                <h2 class="section-title">正式干员16人</h2>
+                <div class="section-divider"></div>
+                <p class="section-subtitle">鼠标悬停卡片翻转，查看详细信息</p>
+            </div>
+            <div class="team-grid" id="teamGrid">
+                <!-- 由 JavaScript 动态生成 -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+    AWARDS · 悬停展开
+    ============================================================ -->
+    <section id="awards">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">· Awards ·</span>
+                <h2 class="section-title">国家级奖项</h2>
+                <div class="section-divider"></div>
+                <p class="section-subtitle">鼠标悬停展开阵列</p>
+            </div>
+            <div class="awards-stage" id="awardsStage">
+                <!-- 由 JavaScript 动态生成 -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+    RULES
+    ============================================================ -->
+    <section id="rules" style="background: var(--color-surface-alt);">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">· Rules ·</span>
+                <h2 class="section-title">队规摘要</h2>
+                <div class="section-divider"></div>
+            </div>
+            <div class="rules-panel">
+                <ol class="rules-list">
+                    <li>按时参加训练与例会，请假须提前报备。</li>
+                    <li>严禁在活动中出现违禁品或损害校队声誉行为。</li>
+                    <li>本队规解释权归队长所有。</li>
+                </ol>
+                <div style="text-align:center; margin-top: var(--space-md);">
+                    <a class="btn btn-secondary" href="assets/pdf/rules.pdf" download="揭阳第一中学数模队队规.pdf">📥 立即下载完整队规 PDF</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+    JOIN
+    ============================================================ -->
+    <section id="join">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">· Join Us ·</span>
+                <h2 class="section-title">零基础可报名</h2>
+                <div class="section-divider"></div>
+                <p class="section-subtitle">面试只看热情与脑洞！欢迎106、107届一中学子</p>
+            </div>
+            <div class="join-panel">
+                <h3>📋 招生计划：<span class="highlight-warm">40~50人/届</span></h3>
+                <p>扫描下方二维码或点击按钮进入报名通道</p>
+                <div class="join-buttons">
+                    <a class="btn btn-primary" href="https://wj.qq.com/s2/23398546/ad18/" target="_blank">📝 报名意向表</a>
+                    <a class="btn btn-warm" href="http://wpa.qq.com/msgrd?v=3&uin=103312220&site=qq&menu=yes" target="_blank">💬 咨询 QQ 群 103312220</a>
+                    <a class="btn btn-outline-warm" href="mailto:2285287248@qq.com?subject=我要加入数模队&body=参考格式：我是xxx，来自xxxxx，初中毕业学校是xxx，我会xxx，想要加入数模队！">✉️ 发送邮件</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+    FLOAT BUTTON
+    ============================================================ -->
+    <a href="https://wj.qq.com/s2/23398546/ad18/" target="_blank" id="float-apply">报名填报</a>
+
+    <!-- ============================================================
+    FOOTER
+    ============================================================ -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 揭阳第一中学数模队 · <span class="footer-accent-green">Model</span> the <span class="footer-accent-warm">World</span>, Code the Future. · All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // ============================================================
+        // NAVBAR TOGGLE
+        // ============================================================
+        const navToggle = document.getElementById('navToggle');
+        const navLinks = document.getElementById('navLinks');
+
+        navToggle.addEventListener('click', () => {
+            navToggle.classList.toggle('active');
+            navLinks.classList.toggle('open');
+        });
+
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navToggle.classList.remove('active');
+                navLinks.classList.remove('open');
+            });
+        });
+
+        // ============================================================
+        // NAVBAR SCROLL EFFECT
+        // ============================================================
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 20) {
+                navbar.style.boxShadow = '0 4px 20px rgba(0,0,0,0.06)';
+            } else {
+                navbar.style.boxShadow = 'none';
+            }
+        });
+
+        // ============================================================
+        // GALLERY CAROUSEL
+        // ============================================================
+        const galleryImages = [
+            { src: 'assets/images/activities/首届数学文化节活动现场.jpg', caption: '首届数学文化节活动现场' },
+            { src: 'assets/images/activities/队内干员开会.jpg', caption: '队内干员开会' },
+            { src: 'assets/images/activities/数学实验室设备.JPG', caption: '数学实验室设备' },
+            { src: 'assets/images/activities/数学建模论文写作指导.jpg', caption: '数学建模论文写作指导' },
+            { src: 'assets/images/activities/数学建模论文撰写.jpg', caption: '数学建模论文撰写' },
+            { src: 'assets/images/activities/日常队课训练.jpg', caption: '日常队课训练' }
+        ];
+
+        let currentSlide = 0;
+        let autoPlayInterval = null;
+        const track = document.getElementById('carouselTrack');
+        const dotsContainer = document.getElementById('carouselDots');
+        const captionEl = document.getElementById('carouselCaption');
+        const prevBtn = document.getElementById('carouselPrev');
+        const nextBtn = document.getElementById('carouselNext');
+
+        // 构建幻灯片
+        function buildCarousel() {
+            track.innerHTML = '';
+            dotsContainer.innerHTML = '';
+
+            galleryImages.forEach((img, index) => {
+                const slide = document.createElement('div');
+                slide.className = 'carousel-slide';
+                slide.innerHTML = `<img src="${img.src}" alt="${img.caption}" loading="lazy">`;
+                track.appendChild(slide);
+
+                const dot = document.createElement('button');
+                dot.className = 'carousel-dot' + (index === 0 ? ' active' : '');
+                dot.setAttribute('aria-label', `转到第 ${index + 1} 张`);
+                dot.dataset.index = index;
+                dot.addEventListener('click', () => goToSlide(index));
+                dotsContainer.appendChild(dot);
+            });
+
+            // 显示第一张的 caption
+            if (galleryImages.length) {
+                captionEl.textContent = galleryImages[0].caption;
+                captionEl.classList.add('visible');
+            }
+        }
+
+        function goToSlide(index) {
+            const slides = track.querySelectorAll('.carousel-slide');
+            const dots = dotsContainer.querySelectorAll('.carousel-dot');
+            if (!slides.length) return;
+
+            const total = slides.length;
+            currentSlide = (index + total) % total;
+
+            track.style.transform = `translateX(-${currentSlide * 100}%)`;
+
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === currentSlide);
+            });
+
+            if (galleryImages[currentSlide]) {
+                captionEl.textContent = galleryImages[currentSlide].caption;
+                captionEl.classList.add('visible');
+            }
+
+            resetAutoPlay();
+        }
+
+        function nextSlide() {
+            goToSlide(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            goToSlide(currentSlide - 1);
+        }
+
+        function startAutoPlay() {
+            if (autoPlayInterval) clearInterval(autoPlayInterval);
+            if (galleryImages.length <= 1) return;
+            autoPlayInterval = setInterval(nextSlide, 4500);
+        }
+
+        function resetAutoPlay() {
+            if (autoPlayInterval) {
+                clearInterval(autoPlayInterval);
+                autoPlayInterval = null;
+            }
+            startAutoPlay();
+        }
+
+        // 初始化轮播
+        buildCarousel();
+        startAutoPlay();
+
+        // 按钮事件
+        prevBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            prevSlide();
+        });
+
+        nextBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            nextSlide();
+        });
+
+        // 触摸滑动支持（移动端）
+        let touchStartX = 0;
+        let touchEndX = 0;
+        const container = document.querySelector('.carousel-container');
+
+        container.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        container.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            const diff = touchStartX - touchEndX;
+            if (Math.abs(diff) > 40) {
+                if (diff > 0) nextSlide();
+                else prevSlide();
+            }
+        }, { passive: true });
+
+        // 暂停自动播放当用户悬停或聚焦时
+        container.addEventListener('mouseenter', () => {
+            if (autoPlayInterval) {
+                clearInterval(autoPlayInterval);
+                autoPlayInterval = null;
+            }
+        });
+
+        container.addEventListener('mouseleave', () => {
+            startAutoPlay();
+        });
+
+        // ============================================================
+        // TEAM DATA & 翻转卡片生成
+        // ============================================================
+        const leaders = [
+            { name: '王梓泰', title: '队长', dept: '管理部', rand: true, said: '“暂时没有找到接班人，有兴趣可以联系我2285287248。”' },
+            { name: '郑烨骏', title: '副队长', dept: '管理部',
+                said: '“INTJ   头脑简单，四肢不发达；喜欢篮球🏀、羽毛球🏸   想在数模队交到志同道合的朋友”' },
+            { name: '蒋妮', title: '副队长', dept: '管理部', said: '' },
+            { name: '何思凯', title: '学术组组长', dept: '竞赛部', said: '' },
+            { name: '吴偲', title: '学术组组长', dept: '学研部', said: '' },
+            { name: '王湉', title: '活动组组长', dept: '资源枢纽', said: '' },
+            { name: '邱钰棋', title: '宣发组组长', dept: '资源枢纽', rand: true, said: '“无”' },
+            { name: '林可凡', title: '宣发组组长', dept: '资源枢纽',
+                said: '#摄影  世界倒映在胶卷，眼睛赏析废墟里的“旷野”。哪怕“生命如暗室”也“不妨我明写春诗”。' },
+            { name: '卓怡彤', title: '秘书组组长', dept: '资源枢纽',
+                said: '“我喜欢看小说🤗，听歌（喜欢五月天，孙燕姿，许嵩），喜欢拍照记录生活，喜欢旅游”' },
+            { name: '陈平浩', title: '技术指导专员', dept: '管理部',
+                said: '“嘿~(¯▽¯~)  欢迎各位师弟师妹们来找我玩啊  读书，吉他，跑步，摄影，书法都可以来交流啊ヾ(≧▽≦*)o”' },
+            { name: '钟子坤', title: '资源部长', dept: '资源枢纽部', said: '“INTJ极度社恐  喜欢摄影 Kpop 画画 看小说”' },
+            { name: '陈蔚宸', title: '前技术组组长', dept: '资源枢纽', said: '' },
+            { name: '洪钊涵', title: '前管理组组长', dept: '竞赛部', said: '' },
+            { name: '林孝锶', title: '竞赛部长', dept: '竞赛部', said: '' },
+            { name: '江恩跃', title: '成员组组长', dept: '竞赛部', said: '' },
+            { name: '黄倍鑫', title: '成员组组长', dept: '竞赛部', said: '“权威”' },
+        ];
+
+        const teamGrid = document.getElementById('teamGrid');
+        leaders.forEach(l => {
+            const imgSrc = l.rand ?
+                `assets/images/leaders/${l.name}${Math.random()>.5?1:2}.jpg` :
+                `assets/images/leaders/${l.name}.jpg`;
+            const mottoHtml = l.said ? `<span class="motto">${l.said}</span>` : '';
+            teamGrid.insertAdjacentHTML('beforeend', `
+                    <div class="member-card">
+                        <div class="member-face member-front">
+                            <img src="${imgSrc}" alt="${l.name}" loading="lazy">
+                        </div>
+                        <div class="member-face member-back">
+                            <h3>${l.name}</h3>
+                            <span class="role-chip">${l.title}</span>
+                            <span class="dept-tag">${l.dept}</span>
+                            ${mottoHtml}
+                        </div>
+                    </div>
+                `);
+        });
+
+        // 翻转交互
+        document.querySelectorAll('.member-card').forEach(card => {
+            card.addEventListener('mouseenter', () => card.classList.add('revealed'));
+            card.addEventListener('mouseleave', () => card.classList.remove('revealed'));
+        });
+
+        // ============================================================
+        // AWARDS DATA & 悬停展开生成
+        // ============================================================
+        const awardsData = [
+            { src: 'assets/images/awards/谢柯烁、郑思佳、陈平浩   论文三等奖.jpg', i: 2.5 },
+            { src: 'assets/images/awards/林宏伟   能力测试一等奖.jpg', i: -2.5 },
+            { src: 'assets/images/awards/林宏伟   综合二等奖.jpg', i: -1.5 },
+            { src: 'assets/images/awards/王梓泰   能力测试二等奖.png', i: -0.5 },
+            { src: 'assets/images/awards/王梓泰   综合二等奖.png', i: 1.5 },
+            { src: 'assets/images/awards/王梓泰、林宏伟   论文二等奖.jpg', i: 0.5 },
+        ];
+
+        const awardsStage = document.getElementById('awardsStage');
+        awardsData.forEach(a => {
+            const card = document.createElement('div');
+            card.className = 'loot-card';
+            card.style.setProperty('--i', a.i);
+            card.innerHTML = `<img src="${a.src}" alt="荣誉证书" loading="lazy">`;
+            awardsStage.appendChild(card);
+        });
+
+        // ============================================================
+        // SCROLL REVEAL
+        // ============================================================
+        if ('IntersectionObserver' in window) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.05 });
+
+            document.querySelectorAll('section, .game-card, .rules-panel, .join-panel').forEach(el => {
+                el.style.opacity = '0.5';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(el);
+            });
+        }
+    </script>
+</body>
+</html>
