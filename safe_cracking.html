@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>内测资格获取</title>
+    <style>
+        :root {
+            --cream: #faf9f5;
+            --surface: #f2efe6;
+            --border: #e0dcd0;
+            --track-bg: #0f1a15;
+            --accent: #0ff798;
+            --accent-rgb: 15, 247, 152;
+            --error: #ff3b3b;
+            --text-primary: #2d2d2d;
+            --text-muted: #999;
+            --char-muted: #4a4a4a;
+            --overlay-bg: rgba(15, 20, 15, 0.92);
+            --fp-btn-w: 68px;
+            --fp-btn-h: 96px;
+            --fp-emoji-size: 44px;
+        }
+        @font-face {
+            font-family: 'SafeMono';
+            src: local('JetBrains Mono'), local('Fira Code'), local('Consolas'), local('Courier New'), monospace;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: var(--cream);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.025) 1px, transparent 1px);
+            background-size: 48px 48px;
+            pointer-events: none;
+            z-index: 0;
+        }
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0, 0, 0, 0.012) 3px, rgba(0, 0, 0, 0.012) 6px);
+            pointer-events: none;
+            z-index: 1;
+        }
+        #safe-widget {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto;
+            user-select: none;
+            overflow: hidden;
+            border-radius: 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 32px rgba(0, 0, 0, 0.06), 0 20px 60px rgba(0, 0, 0, 0.04);
+            transition: box-shadow 0.5s ease;
+        }
+        #safe-widget.unlocked {
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 32px rgba(0, 0, 0, 0.06), 0 20px 60px rgba(0, 0, 0, 0.04), 0 0 80px rgba(var(--accent-rgb), 0.12);
+        }
+        @keyframes pulse-green {
+            0%,
+            100% {
+                text-shadow: 0 0 10px rgba(var(--accent-rgb), 0.7), 0 0 22px rgba(var(--accent-rgb), 0.25);
+            }
+            50% {
+                text-shadow: 0 0 18px rgba(var(--accent-rgb), 0.95), 0 0 36px rgba(var(--accent-rgb), 0.45);
+            }
+        }
+        @keyframes screen-flash {
+            0% {
+                box-shadow: inset 0 0 0 rgba(var(--accent-rgb), 0);
+            }
+            30% {
+                box-shadow: inset 0 0 100px rgba(var(--accent-rgb), 0.18);
+            }
+            100% {
+                box-shadow: inset 0 0 0 rgba(var(--accent-rgb), 0);
+            }
+        }
+        @keyframes shake {
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+            15% {
+                transform: translateX(-3px);
+            }
+            30% {
+                transform: translateX(3px);
+            }
+            45% {
+                transform: translateX(-2px);
+            }
+            60% {
+                transform: translateX(2px);
+            }
+            75% {
+                transform: translateX(-1px);
+            }
+            90% {
+                transform: translateX(1px);
+            }
+        }
+        @keyframes scan-sweep {
+            0% {
+                top: -2px;
+            }
+            100% {
+                top: 100%;
+            }
+        }
+        @keyframes fp-scan-line {
+            0% {
+                top: 10%;
+            }
+            35% {
+                top: 78%;
+            }
+            55% {
+                top: 78%;
+            }
+            100% {
+                top: 10%;
+            }
+        }
+        @keyframes fp-ring {
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0.35), 0 0 0 0 rgba(var(--accent-rgb), 0.12);
+            }
+            50% {
+                box-shadow: 0 0 0 6px rgba(var(--accent-rgb), 0), 0 0 0 2px rgba(var(--accent-rgb), 0.06);
+            }
+        }
+
+        .safe-screen {
+            position: relative;
+            padding: 32px 20px 26px;
+            background: var(--surface);
+            overflow: hidden;
+            border-radius: 16px;
+        }
+        .safe-screen::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: rgba(0, 0, 0, 0.05);
+            animation: scan-sweep 5s linear infinite;
+            pointer-events: none;
+            z-index: 3;
+        }
+        .safe-title {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 22px;
+            letter-spacing: 4px;
+            font-weight: 500;
+            text-transform: uppercase;
+            position: relative;
+            z-index: 1;
+        }
+        .crack-area {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 18px;
+            position: relative;
+            z-index: 1;
+        }
+        .track-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: nowrap;
+        }
+        .track-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .track {
+            width: 44px;
+            height: 200px;
+            background: var(--track-bg);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(255, 255, 255, 0.03);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .track-inner {
+            position: absolute;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            will-change: transform;
+        }
+        .char {
+            width: 100%;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 19px;
+            font-weight: 500;
+            color: var(--char-muted);
+            font-family: 'SafeMono', 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+            flex-shrink: 0;
+            transition: color 0.15s ease, text-shadow 0.15s ease;
+        }
+        .char.green {
+            color: var(--accent);
+            text-shadow: 0 0 10px rgba(var(--accent-rgb), 0.7), 0 0 22px rgba(var(--accent-rgb), 0.25);
+            animation: pulse-green 0.7s ease-in-out infinite;
+        }
+        .char.locked {
+            color: var(--accent);
+            text-shadow: 0 0 14px rgba(var(--accent-rgb), 0.85), 0 0 28px rgba(var(--accent-rgb), 0.35);
+            animation: none;
+        }
+        .viewfinder {
+            position: absolute;
+            left: 2px;
+            right: 2px;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 40px;
+            border: 2px solid rgba(255, 255, 255, 0.45);
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.015);
+            pointer-events: none;
+            z-index: 2;
+            transition: border-color 0.1s ease, background 0.1s ease, box-shadow 0.1s ease;
+        }
+        .viewfinder.hit {
+            border-color: var(--accent);
+            background: rgba(var(--accent-rgb), 0.08);
+            box-shadow: 0 0 16px rgba(var(--accent-rgb), 0.18);
+        }
+        .viewfinder.miss {
+            border-color: var(--error);
+            background: rgba(255, 59, 59, 0.06);
+            animation: shake 0.35s ease;
+        }
+
+        .indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #d5d0c8;
+            border: 1px solid #c8c3b8;
+            transition: all 0.2s ease;
+        }
+        .indicator.on {
+            background: var(--accent);
+            border-color: var(--accent);
+            box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.55), 0 0 24px rgba(var(--accent-rgb), 0.2);
+        }
+        .indicator.off {
+            background: #d5d0c8;
+            border-color: #c8c3b8;
+        }
+
+        .fingerprint-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+            justify-content: center;
+        }
+        .fingerprint-btn {
+            width: var(--fp-btn-w);
+            height: var(--fp-btn-h);
+            border-radius: 50%;
+            background: var(--track-bg);
+            border: 2px solid rgba(var(--accent-rgb), 0.4);
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4), 0 0 0 0 rgba(var(--accent-rgb), 0.35);
+            transition: transform 0.06s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+            animation: fp-ring 2s ease-in-out infinite;
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
+            padding: 0;
+            touch-action: manipulation;
+        }
+        .fingerprint-btn:hover {
+            border-color: var(--accent);
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4), 0 0 18px rgba(var(--accent-rgb), 0.25), 0 0 36px rgba(var(--accent-rgb), 0.06);
+            animation: none;
+        }
+        .fingerprint-btn:active {
+            transform: scale(0.9);
+            border-color: var(--accent);
+            box-shadow: inset 0 4px 14px rgba(0, 0, 0, 0.55), 0 0 28px rgba(var(--accent-rgb), 0.4), 0 0 50px rgba(var(--accent-rgb), 0.1);
+            transition: transform 0.04s ease, border-color 0.04s ease, box-shadow 0.04s ease;
+            animation: none;
+        }
+        .fingerprint-btn:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 4px;
+            animation: none;
+        }
+        .fingerprint-btn:disabled {
+            cursor: default;
+            opacity: 0.5;
+            animation: none;
+            border-color: rgba(var(--accent-rgb), 0.2);
+            pointer-events: none;
+        }
+        .fp-scan-line {
+            position: absolute;
+            left: 16%;
+            right: 16%;
+            height: 1.5px;
+            background: rgba(var(--accent-rgb), 0.65);
+            border-radius: 1px;
+            pointer-events: none;
+            z-index: 1;
+            box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.45);
+            animation: fp-scan-line 2s ease-in-out infinite;
+        }
+        .fingerprint-btn:hover .fp-scan-line {
+            animation-duration: 1.3s;
+            background: rgba(var(--accent-rgb), 0.9);
+            box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.65);
+        }
+        .fingerprint-btn:active .fp-scan-line {
+            animation: none;
+            top: 50%;
+            background: rgba(var(--accent-rgb), 1);
+            box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.85);
+        }
+        .fp-emoji {
+            font-size: var(--fp-emoji-size);
+            line-height: 1;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.75;
+            transition: opacity 0.15s ease, transform 0.06s ease;
+            position: relative;
+        }
+        .fingerprint-btn:hover .fp-emoji {
+            opacity: 1;
+        }
+        .fingerprint-btn:active .fp-emoji {
+            opacity: 1;
+            transform: scale(0.88);
+        }
+        .fp-placeholder {
+            width: 10px;
+            height: 10px;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border);
+            position: relative;
+            z-index: 1;
+        }
+        .status-bar .indicator {
+            width: 8px;
+            height: 8px;
+        }
+
+        .hint {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 14px;
+            letter-spacing: 0.5px;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .hint kbd {
+            background: #e8e4da;
+            border: 1px solid #d5d0c5;
+            border-radius: 5px;
+            padding: 3px 10px;
+            font-size: 11px;
+            color: var(--text-primary);
+            font-family: 'SafeMono', 'JetBrains Mono', monospace;
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
+        }
+        .hint-separator {
+            color: #c8c3b8;
+            font-size: 11px;
+        }
+
+        .progress-text {
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 8px;
+            font-family: 'SafeMono', monospace;
+            position: relative;
+            z-index: 1;
+        }
+        .progress-text span {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .track-locked .track {
+            border-color: rgba(var(--accent-rgb), 0.25);
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5), 0 0 12px rgba(var(--accent-rgb), 0.08);
+        }
+
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: var(--overlay-bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border-radius: 16px;
+        }
+        .overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .overlay-text {
+            color: var(--accent);
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-shadow: 0 0 28px rgba(var(--accent-rgb), 0.5), 0 0 56px rgba(var(--accent-rgb), 0.15);
+            letter-spacing: 3px;
+            font-family: 'SafeMono', 'JetBrains Mono', monospace;
+        }
+        .overlay-sub {
+            color: #c8c3b8;
+            font-size: 14px;
+            letter-spacing: 1.5px;
+            font-weight: 400;
+        }
+        .btn {
+            margin-top: 20px;
+            padding: 11px 36px;
+            background: transparent;
+            border: 1.5px solid rgba(var(--accent-rgb), 0.5);
+            border-radius: 8px;
+            color: #e0dcd0;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            letter-spacing: 1.5px;
+            font-family: inherit;
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
+        }
+        .btn:hover {
+            background: rgba(var(--accent-rgb), 0.08);
+            border-color: var(--accent);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.15);
+        }
+        .btn:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 3px;
+        }
+        .flash-green {
+            animation: screen-flash 0.8s ease;
+        }
+
+        @media (max-width:640px) {
+            :root {
+                --fp-btn-w: 56px;
+                --fp-btn-h: 80px;
+                --fp-emoji-size: 36px;
+            }
+            .crack-area {
+                gap: 10px;
+            }
+            .track {
+                width: 38px;
+                height: 180px;
+            }
+            .char {
+                height: 36px;
+                font-size: 17px;
+            }
+            .viewfinder {
+                height: 36px;
+            }
+            .track-container {
+                gap: 7px;
+            }
+            .safe-screen {
+                padding: 24px 12px 20px;
+            }
+            .overlay-text {
+                font-size: 22px;
+                letter-spacing: 2px;
+            }
+            .fp-scan-line {
+                left: 18%;
+                right: 18%;
+            }
+        }
+        @media (max-width:460px) {
+            :root {
+                --fp-btn-w: 48px;
+                --fp-btn-h: 68px;
+                --fp-emoji-size: 30px;
+            }
+            .crack-area {
+                gap: 7px;
+            }
+            .track {
+                width: 32px;
+                height: 160px;
+            }
+            .char {
+                height: 32px;
+                font-size: 15px;
+            }
+            .viewfinder {
+                height: 32px;
+            }
+            .track-container {
+                gap: 5px;
+            }
+            .safe-screen {
+                padding: 20px 8px 16px;
+            }
+            .safe-title {
+                font-size: 10px;
+                letter-spacing: 3px;
+            }
+            .overlay-text {
+                font-size: 18px;
+                letter-spacing: 1.5px;
+            }
+            .overlay-sub {
+                font-size: 12px;
+            }
+            .btn {
+                padding: 9px 24px;
+                font-size: 12px;
+            }
+            .fingerprint-btn {
+                border-width: 1.5px;
+            }
+            .fp-scan-line {
+                left: 19%;
+                right: 19%;
+                height: 1px;
+            }
+            .hint {
+                font-size: 10px;
+                gap: 4px;
+            }
+            .hint kbd {
+                padding: 2px 7px;
+                font-size: 10px;
+            }
+            .hint-separator {
+                font-size: 10px;
+            }
+        }
+        @media (max-width:370px) {
+            :root {
+                --fp-btn-w: 40px;
+                --fp-btn-h: 58px;
+                --fp-emoji-size: 26px;
+            }
+            .track {
+                width: 28px;
+                height: 140px;
+            }
+            .char {
+                height: 28px;
+                font-size: 13px;
+            }
+            .viewfinder {
+                height: 28px;
+            }
+            .track-container {
+                gap: 3px;
+            }
+            .crack-area {
+                gap: 5px;
+            }
+            .fingerprint-btn {
+                border-width: 1.5px;
+            }
+            .fp-scan-line {
+                left: 21%;
+                right: 21%;
+                height: 1px;
+            }
+            .indicator {
+                width: 7px;
+                height: 7px;
+            }
+            .track-wrapper {
+                gap: 6px;
+            }
+            .fingerprint-wrapper {
+                gap: 6px;
+            }
+            .fp-placeholder {
+                width: 7px;
+                height: 7px;
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .char.green {
+                animation: none;
+            }
+            .safe-screen::before {
+                animation: none;
+            }
+            .viewfinder.miss {
+                animation: none;
+            }
+            .fp-scan-line {
+                animation: none;
+                top: 50%;
+            }
+            .fingerprint-btn {
+                animation: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="safe-widget">
+        <div class="safe-screen" id="safeScreen">
+            <div class="safe-title">Safe Cracking Protocol</div>
+            <div class="crack-area">
+                <div class="track-container" id="trackContainer"></div>
+                <div class="fingerprint-wrapper">
+                    <button class="fingerprint-btn" id="fingerprintBtn" aria-label="指纹扫描选定密码" title="点击或按空格键选定密码">
+                        <span class="fp-scan-line"></span>
+                        <span class="fp-emoji">🫆</span>
+                    </button>
+                    <div class="fp-placeholder"></div>
+                </div>
+            </div>
+            <div class="status-bar" id="statusBar"></div>
+            <div class="progress-text" id="progressText">LOCKED: <span>0</span> / 7</div>
+            <div class="hint">
+                <span>破解方法：当绿色的密码到达中央时，按 <kbd>␣</kbd> 或点击</span>
+                <span> <kbd>🫆</kbd> 选定密码</span>
+            </div>
+        </div>
+        <div class="overlay" id="overlay">
+            <div class="overlay-text" id="overlayText">ACCESS GRANTED</div>
+            <div class="overlay-sub" id="overlaySub">已解锁内测资格</div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ============================================================
+            //  🚀 解锁成功后跳转配置
+            // ============================================================
+            const REDIRECT_URL = 'https://jessssssseea.github.io/JYYZMMC/index_newdesign.html';
+            const REDIRECT_DELAY = 1500; // 毫秒
+            // ============================================================
+
+            const PASSWORD = 'JYYZMMC';
+            const TRACK_COUNT = PASSWORD.length;
+            const CHAR_HEIGHT = 40;
+            const VISIBLE_CHARS = 5;
+            const SPEED_BASE = 2.5;
+            const CHARSET = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+            let tracks = [];
+            let lockedCount = 0;
+            let isActive = true;
+            let animId = null;
+            let lastTime = 0;
+            let resetTimer = null;
+            let lastLockTime = 0;
+
+            // ----- 跳转相关 -----
+            let redirectTimer = null; // 跳转定时器
+
+            const container = document.getElementById('trackContainer');
+            const statusBar = document.getElementById('statusBar');
+            const overlay = document.getElementById('overlay');
+            const overlayText = document.getElementById('overlayText');
+            const overlaySub = document.getElementById('overlaySub');
+            const safeScreen = document.getElementById('safeScreen');
+            const safeWidget = document.getElementById('safe-widget');
+            const restartBtn = document.getElementById('restartBtn');
+            const fingerprintBtn = document.getElementById('fingerprintBtn');
+            const progressText = document.getElementById('progressText');
+
+            // Audio
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            let audioCtx = null;
+
+            function ensureAudio() {
+                if (!audioCtx) audioCtx = new AudioCtx();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+            }
+
+            function playLockSuccess() {
+                ensureAudio();
+                const now = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const g = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, now);
+                osc.frequency.exponentialRampToValueAtTime(1760, now + 0.05);
+                g.gain.setValueAtTime(0.12, now);
+                g.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+                osc.connect(g);
+                g.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.1);
+                const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.06, audioCtx.sampleRate);
+                const d = buf.getChannelData(0);
+                for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (buf.length * 0.25));
+                const src = audioCtx.createBufferSource();
+                src.buffer = buf;
+                const filt = audioCtx.createBiquadFilter();
+                filt.type = 'lowpass';
+                filt.frequency.setValueAtTime(400, now);
+                const gn = audioCtx.createGain();
+                gn.gain.setValueAtTime(0.07, now);
+                gn.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+                src.connect(filt);
+                filt.connect(gn);
+                gn.connect(audioCtx.destination);
+                src.start(now);
+            }
+
+            function playUnlock() {
+                ensureAudio();
+                const now = audioCtx.currentTime;
+                for (let i = 0; i < 5; i++) {
+                    const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.12, audioCtx.sampleRate);
+                    const d = buf.getChannelData(0);
+                    for (let j = 0; j < d.length; j++) d[j] = (Math.random() * 2 - 1) * Math.exp(-j / (d.length * 0.2));
+                    const src = audioCtx.createBufferSource();
+                    src.buffer = buf;
+                    const filt = audioCtx.createBiquadFilter();
+                    filt.type = 'bandpass';
+                    filt.frequency.setValueAtTime(200 + i * 50, now + i * 0.06);
+                    filt.Q.setValueAtTime(2, now + i * 0.06);
+                    const gn = audioCtx.createGain();
+                    gn.gain.setValueAtTime(0.1, now + i * 0.06);
+                    gn.gain.exponentialRampToValueAtTime(0.001, now + i * 0.06 + 0.12);
+                    src.connect(filt);
+                    filt.connect(gn);
+                    gn.connect(audioCtx.destination);
+                    src.start(now + i * 0.06);
+                }
+                const hb = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.4, audioCtx.sampleRate);
+                const hd = hb.getChannelData(0);
+                for (let i = 0; i < hd.length; i++) hd[i] = (Math.random() * 2 - 1) * 0.25;
+                const hsrc = audioCtx.createBufferSource();
+                hsrc.buffer = hb;
+                const hfilt = audioCtx.createBiquadFilter();
+                hfilt.type = 'highpass';
+                hfilt.frequency.setValueAtTime(2000, now + 0.3);
+                const hgn = audioCtx.createGain();
+                hgn.gain.setValueAtTime(0, now + 0.3);
+                hgn.gain.linearRampToValueAtTime(0.035, now + 0.38);
+                hgn.gain.exponentialRampToValueAtTime(0.001, now + 0.7);
+                hsrc.connect(hfilt);
+                hfilt.connect(hgn);
+                hgn.connect(audioCtx.destination);
+                hsrc.start(now + 0.3);
+            }
+
+            function randomCharExcept(excludeChar) {
+                const filtered = CHARSET.split('').filter(c => c !== excludeChar);
+                return filtered[Math.floor(Math.random() * filtered.length)];
+            }
+
+            function updateProgress() {
+                progressText.innerHTML = 'LOCKED: <span>' + lockedCount + '</span> / ' + TRACK_COUNT;
+            }
+
+            function createTrack(index, passwordChar) {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'track-wrapper';
+                wrapper.id = 'wrapper-' + index;
+                const trackEl = document.createElement('div');
+                trackEl.className = 'track';
+                const inner = document.createElement('div');
+                inner.className = 'track-inner';
+                inner.id = 'inner-' + index;
+                const vf = document.createElement('div');
+                vf.className = 'viewfinder';
+                vf.id = 'vf-' + index;
+                trackEl.appendChild(inner);
+                trackEl.appendChild(vf);
+                wrapper.appendChild(trackEl);
+                const indicator = document.createElement('div');
+                indicator.className = 'indicator off';
+                indicator.id = 'ind-' + index;
+                wrapper.appendChild(indicator);
+                container.appendChild(wrapper);
+
+                const total = VISIBLE_CHARS + 4;
+                const chars = [];
+                for (let i = 0; i < total; i++) {
+                    const el = document.createElement('div');
+                    el.className = 'char';
+                    el.textContent = randomCharExcept(passwordChar);
+                    inner.appendChild(el);
+                    chars.push({ el, isGreen: false, locked: false });
+                }
+                const greenIdx = Math.floor(Math.random() * total);
+                chars[greenIdx].isGreen = true;
+                chars[greenIdx].el.textContent = passwordChar;
+                chars[greenIdx].el.classList.add('green');
+                return { index, inner, chars, offset: 0, speed: SPEED_BASE + Math.random() * 0.8, locked: false, wrapper,
+                    greenIndex: greenIdx, passwordChar };
+            }
+
+            function getCenterChar(track) {
+                const centerY = track.offset + (VISIBLE_CHARS * CHAR_HEIGHT) / 2;
+                const idx = Math.floor(centerY / CHAR_HEIGHT);
+                return (idx >= 0 && idx < track.chars.length) ? track.chars[idx] : null;
+            }
+
+            // ----- 重置（同时取消跳转定时器） -----
+            function resetAllTracks() {
+                if (resetTimer) { clearTimeout(resetTimer);
+                    resetTimer = null; }
+                // 取消待执行的跳转
+                if (redirectTimer) { clearTimeout(redirectTimer);
+                    redirectTimer = null; }
+                if (animId) { cancelAnimationFrame(animId);
+                    animId = null; }
+                lastLockTime = 0;
+                init();
+            }
+
+            function attemptLock() {
+                const now = performance.now();
+                if (now - lastLockTime < 250) return;
+                if (!isActive) return;
+                ensureAudio();
+                lastLockTime = now;
+                for (const track of tracks) {
+                    if (!track.locked) { lockTrack(track); break; }
+                }
+            }
+
+            function lockTrack(track) {
+                if (track.locked || !isActive) return;
+                const centerChar = getCenterChar(track);
+                if (!centerChar || !centerChar.isGreen) {
+                    const vf = document.getElementById('vf-' + track.index);
+                    vf.classList.remove('hit');
+                    vf.classList.add('miss');
+                    isActive = false;
+                    resetTimer = setTimeout(() => resetAllTracks(), 200);
+                    return;
+                }
+                track.locked = true;
+                centerChar.locked = true;
+                centerChar.el.classList.remove('green');
+                centerChar.el.classList.add('locked');
+                document.getElementById('vf-' + track.index).classList.add('hit');
+                const ind = document.getElementById('ind-' + track.index);
+                ind.classList.remove('off');
+                ind.classList.add('on');
+                const statusInd = document.getElementById('status-' + track.index);
+                if (statusInd) { statusInd.classList.remove('off');
+                    statusInd.classList.add('on'); }
+                track.wrapper.classList.add('track-locked');
+                lockedCount++;
+                updateProgress();
+                playLockSuccess();
+
+                // ----- 解锁成功 👇 -----
+                if (lockedCount >= TRACK_COUNT) {
+                    fingerprintBtn.disabled = true;
+                    setTimeout(() => {
+                        safeScreen.classList.add('flash-green');
+                        safeWidget.classList.add('unlocked');
+                        overlayText.textContent = 'ACCESS GRANTED';
+                        overlaySub.textContent = '解锁成功';
+                        overlay.classList.add('active');
+                        isActive = false;
+                        playUnlock();
+
+                        // 🚀 延迟跳转到指定网页
+                        if (REDIRECT_URL && REDIRECT_URL.trim() !== '') {
+                            redirectTimer = setTimeout(() => {
+                                window.location.href = REDIRECT_URL;
+                            }, REDIRECT_DELAY);
+                        }
+                    }, 250);
+                }
+                // ----- 解锁成功 👆 -----
+            }
+
+            function loop(now) {
+                if (!isActive) { animId = requestAnimationFrame(loop); return; }
+                const dt = (now - lastTime) / 16.67;
+                lastTime = now;
+                tracks.forEach(track => {
+                    if (track.locked) return;
+                    track.offset += track.speed * dt;
+                    while (track.offset >= CHAR_HEIGHT) {
+                        track.offset -= CHAR_HEIGHT;
+                        const first = track.chars.shift();
+                        const wasGreen = first.isGreen;
+                        if (first.el.parentNode) first.el.parentNode.removeChild(first.el);
+                        const el = document.createElement('div');
+                        el.className = 'char';
+                        if (wasGreen) { el.classList.add('green');
+                            el.textContent = track.passwordChar; } else { el.textContent = randomCharExcept(track
+                                .passwordChar); }
+                        track.inner.appendChild(el);
+                        track.chars.push({ el, isGreen: wasGreen, locked: false });
+                    }
+                    track.inner.style.transform = 'translateY(' + (-track.offset) + 'px)';
+                });
+                animId = requestAnimationFrame(loop);
+            }
+
+            function init() {
+                if (resetTimer) { clearTimeout(resetTimer);
+                    resetTimer = null; }
+                if (redirectTimer) { clearTimeout(redirectTimer);
+                    redirectTimer = null; } // 重置时取消跳转
+                container.innerHTML = '';
+                statusBar.innerHTML = '';
+                tracks = [];
+                lockedCount = 0;
+                isActive = true;
+                lastLockTime = 0;
+                overlay.classList.remove('active');
+                safeScreen.classList.remove('flash-green');
+                safeWidget.classList.remove('unlocked');
+                fingerprintBtn.disabled = false;
+                updateProgress();
+                for (let i = 0; i < TRACK_COUNT; i++) tracks.push(createTrack(i, PASSWORD[i]));
+                for (let i = 0; i < TRACK_COUNT; i++) {
+                    const dot = document.createElement('div');
+                    dot.className = 'indicator off';
+                    dot.id = 'status-' + i;
+                    statusBar.appendChild(dot);
+                }
+                lastTime = performance.now();
+                if (animId) cancelAnimationFrame(animId);
+                animId = requestAnimationFrame(loop);
+            }
+
+            // 键盘
+            document.addEventListener('keydown', (e) => { if (e.code === 'Space') { e.preventDefault();
+                    attemptLock(); } });
+
+            // 指纹按钮
+            fingerprintBtn.addEventListener('pointerdown', (e) => { e.preventDefault();
+                attemptLock(); });
+            fingerprintBtn.addEventListener('click', (e) => e.preventDefault());
+
+            document.addEventListener('click', ensureAudio);
+            document.addEventListener('touchstart', ensureAudio, { passive: true });
+
+
+            init();
+        })();
+    </script>
+</body>
+</html>
