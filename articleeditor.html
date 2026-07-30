@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF 论文集排版规划工具 v3</title>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --text-main: #1f2937;
+            --text-sub: #6b7280;
+            --border-color: #e5e7eb;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            color: var(--text-main);
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        h1 { margin: 0; font-size: 1.2rem; }
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-left: 10px;
+            transition: background 0.2s;
+        }
+        .btn:hover { background-color: var(--primary-hover); }
+        .btn-secondary { background-color: #6b7280; }
+        .btn-secondary:hover { background-color: #4b5563; }
+
+        #main-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            align-content: flex-start;
+            min-height: 70vh;
+            padding: 20px;
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            background-color: #fafafa;
+        }
+
+        /* 堆叠卡片样式 */
+        .pdf-card {
+            position: relative;
+            width: 140px;
+            height: 200px;
+            cursor: grab;
+            transition: transform 0.2s;
+        }
+        .pdf-card:active { cursor: grabbing; }
+        .pdf-card.sortable-ghost { opacity: 0.3; }
+        .pdf-card.sortable-chosen { transform: scale(1.03); }
+        
+        .stack-layer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        /* 模拟堆叠厚度 */
+        .stack-layer:nth-child(1) { transform: translate(4px, 4px); z-index: 1; }
+        .stack-layer:nth-child(2) { transform: translate(2px, 2px); z-index: 2; }
+        .stack-layer:nth-child(3) { z-index: 3; display: flex; flex-direction: column; overflow: hidden; }
+
+        .card-preview {
+            flex: 1;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid #eee;
+            overflow: hidden;
+        }
+        .card-preview canvas {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .card-info {
+            padding: 8px;
+            font-size: 0.75rem;
+            background: white;
+        }
+        .card-title {
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 4px;
+        }
+        .card-pages {
+            color: var(--text-sub);
+            font-size: 0.7rem;
+        }
+        /* 实时页码区间高亮显示 */
+        .card-range {
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 0.85rem;
+            margin-top: 4px;
+            background: #eff6ff;
+            padding: 2px 4px;
+            border-radius: 2px;
+            display: inline-block;
+        }
+
+        #empty-state {
+            width: 100%;
+            text-align: center;
+            color: var(--text-sub);
+            margin-top: 100px;
+        }
+
+        /* 模态预览框 - 使用 iframe 承载浏览器原生预览 */
+        #preview-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        #preview-content-wrapper {
+            display: flex;
+            flex-direction: column;
+            width: 85%;
+            height: 90%;
+            background: #525659;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        /* 核心修改：iframe 撑满容器 */
+        #pdf-preview-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
+        }
+        #modal-close {
+            position: absolute;
+            top: 20px; right: 30px;
+            color: white;
+            font-size: 2.5rem;
+            cursor: pointer;
+            z-index: 101;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+        #modal-close:hover { color: #f87171; }
+        
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>📚 PDF 论文集排版规划工具</h1>
+        <div>
+            <button class="btn btn-secondary" onclick="document.getElementById('folder-input').click()">1. 选择PDF文件夹</button>
+            <input type="file" id="folder-input" webkitdirectory multiple style="display:none" accept=".pdf">
+            <button class="btn" onclick="exportConfig()">2. 确认并导出页码表</button>
+        </div>
+    </header>
+
+    <div id="main-container">
+        <div id="empty-state">
+            <h2>👆 请点击上方按钮选择包含PDF的文件夹</h2>
+            <p>加载后，你可以拖动卡片调整顺序，双击卡片调用浏览器原生预览。</p>
+            <p>系统会自动识别页数并实时计算合并后的页码区间。</p>
+        </div>
+    </div>
+
+    <!-- 预览模态框 -->
+    <div id="preview-modal">
+        <span id="modal-close" onclick="closeModal()">&times;</span>
+        <div id="preview-content-wrapper">
+            <!-- 使用 iframe 嵌入 PDF -->
+            <iframe id="pdf-preview-iframe" src=""></iframe>
+        </div>
+    </div>
+
+    <script>
+        // 配置 pdf.js 的 worker (仅用于初始获取页数和缩略图)
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        let pdfDataStore = []; // 存储解析后的PDF数据
+        let currentStartPage = 1; // 全局起始页码
+        let currentPreviewUrl = null; // 记录当前预览的 ObjectURL 以便释放内存
+
+        // DOM 元素
+        const container = document.getElementById('main-container');
+        const emptyState = document.getElementById('empty-state');
+        const previewModal = document.getElementById('preview-modal');
+        const previewIframe = document.getElementById('pdf-preview-iframe');
+
+        // 1. 处理文件夹选择
+        document.getElementById('folder-input').addEventListener('change', async (e) => {
+            const files = Array.from(e.target.files).filter(f => f.type === 'application/pdf' || f.name.endsWith('.pdf'));
+            if (files.length === 0) {
+                alert("未在所选文件夹中找到PDF文件。");
+                return;
+            }
+
+            container.innerHTML = '<div class="loading-spinner"></div>';
+            
+            // 尝试读取缓存排序
+            const cachedOrder = JSON.parse(localStorage.getItem('pdf_sort_cache_v3') || '[]');
+            const cachedNames = cachedOrder.map(item => item.name);
+            const currentNames = files.map(f => f.name);
+
+            // 判断文件集合是否一致
+            const isSameSet = cachedNames.length === currentNames.length && 
+                              cachedNames.every(name => currentNames.includes(name));
+
+            let sortedFiles = [];
+            if (isSameSet) {
+                cachedOrder.forEach(cachedItem => {
+                    let file = files.find(f => f.name === cachedItem.name);
+                    if (file) sortedFiles.push(file);
+                });
+            } else {
+                sortedFiles = [...files].sort((a, b) => a.name.localeCompare(b.name));
+            }
+
+            // 解析PDF并构建数据
+            pdfDataStore = [];
+            for (let i = 0; i < sortedFiles.length; i++) {
+                const file = sortedFiles[i];
+                try {
+                    const arrayBuffer = await file.arrayBuffer();
+                    const pdfDoc = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
+                    pdfDataStore.push({
+                        id: 'pdf_' + i,
+                        file: file,
+                        name: file.name,
+                        total_pages: pdfDoc.numPages,
+                        _pdfDoc: pdfDoc // 缓存文档对象用于生成缩略图
+                    });
+                } catch (err) {
+                    console.error("解析PDF失败:", file.name, err);
+                    pdfDataStore.push({
+                        id: 'pdf_' + i,
+                        file: file,
+                        name: file.name + " (解析失败)",
+                        total_pages: 0,
+                        _pdfDoc: null
+                    });
+                }
+            }
+
+            renderCards();
+        });
+
+        // 2. 渲染卡片并初始化拖拽
+        function renderCards() {
+            container.innerHTML = '';
+            if (pdfDataStore.length === 0) {
+                container.appendChild(emptyState);
+                return;
+            }
+
+            updatePageNumbers();
+
+            pdfDataStore.forEach(data => {
+                const card = document.createElement('div');
+                card.className = 'pdf-card';
+                card.dataset.id = data.id;
+                
+                card.innerHTML = `
+                    <div class="stack-layer"></div>
+                    <div class="stack-layer"></div>
+                    <div class="stack-layer">
+                        <div class="card-preview" id="preview-${data.id}">
+                            <div class="loading-spinner" style="width:20px;height:20px;border-width:2px;"></div>
+                        </div>
+                        <div class="card-info">
+                            <div class="card-title" title="${data.name}">${data.name}</div>
+                            <div class="card-pages">共 ${data.total_pages} 页</div>
+                            <div class="card-range" id="range-${data.id}">计算中...</div>
+                        </div>
+                    </div>
+                `;
+                
+                card.ondblclick = () => openNativePreview(data.id);
+                container.appendChild(card);
+
+                renderThumbnail(data);
+            });
+
+            // 初始化拖拽
+            Sortable.create(container, {
+                animation: 150,
+                ghostClass: 'sortable-ghost',
+                chosenClass: 'sortable-chosen',
+                onEnd: function (evt) {
+                    const movedItem = pdfDataStore.splice(evt.oldIndex, 1)[0];
+                    pdfDataStore.splice(evt.newIndex, 0, movedItem);
+                    updatePageNumbers();
+                    saveCache();
+                }
+            });
+        }
+
+        // 3. 渲染缩略图 (仅用一次，用于卡片展示)
+        async function renderThumbnail(data) {
+            if (!data._pdfDoc) return;
+            try {
+                const page = await data._pdfDoc.getPage(1);
+                const viewport = page.getViewport({ scale: 0.3 });
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+
+                await page.render({canvasContext: context, viewport: viewport}).promise;
+                
+                const previewDiv = document.getElementById(`preview-${data.id}`);
+                if (previewDiv) {
+                    previewDiv.innerHTML = '';
+                    previewDiv.appendChild(canvas);
+                }
+            } catch(e) {
+                console.error("渲染缩略图失败:", e);
+            }
+        }
+
+        // 4. 实时计算并更新页码区间
+        function updatePageNumbers() {
+            let currentPage = currentStartPage;
+            pdfDataStore.forEach(data => {
+                const start = currentPage;
+                const end = currentPage + data.total_pages - 1;
+                const rangeEl = document.getElementById(`range-${data.id}`);
+                
+                if (rangeEl) {
+                    if (data.total_pages > 0) {
+                        rangeEl.innerText = `排在: ${start} - ${end} 页`;
+                    } else {
+                        rangeEl.innerText = "页数未知";
+                    }
+                }
+                currentPage = end + 1;
+            });
+        }
+
+        // 5. 调用浏览器内置预览功能 (核心修改)
+        function openNativePreview(id) {
+            const data = pdfDataStore.find(d => d.id === id);
+            if (!data || !data.file) {
+                alert("该文件无法预览。");
+                return;
+            }
+
+            // 释放上一次预览的 URL，防止内存泄漏
+            if (currentPreviewUrl) {
+                URL.revokeObjectURL(currentPreviewUrl);
+            }
+
+            // 为当前 PDF 文件创建一个临时的本地 URL
+            currentPreviewUrl = URL.createObjectURL(data.file);
+            
+            // 将 URL 指向 iframe，浏览器会自动使用内置的 PDF 阅读器打开它
+            previewIframe.src = currentPreviewUrl;
+            previewModal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            previewModal.style.display = 'none';
+            previewIframe.src = ''; // 清空 src，停止渲染释放资源
+            
+            // 释放内存
+            if (currentPreviewUrl) {
+                URL.revokeObjectURL(currentPreviewUrl);
+                currentPreviewUrl = null;
+            }
+        }
+
+        // 6. 缓存存储
+        function saveCache() {
+            const cacheData = pdfDataStore.map(d => ({name: d.name}));
+            localStorage.setItem('pdf_sort_cache_v3', JSON.stringify(cacheData));
+        }
+
+        // 7. 导出配置
+        function exportConfig() {
+            if (pdfDataStore.length === 0) {
+                alert("没有可导出的数据！");
+                return;
+            }
+
+            let currentPage = currentStartPage;
+            let csvContent = "文件名,起始页,结束页,总页数\n";
+            
+            pdfDataStore.forEach(data => {
+                const start = currentPage;
+                const end = currentPage + data.total_pages - 1;
+                csvContent += `${data.name},${start},${end},${data.total_pages}\n`;
+                currentPage = end + 1;
+            });
+
+            const blob = new Blob(["\ufeff" + csvContent], {type: 'text/csv;charset=utf-8;'});
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", "论文集页码规划表.csv");
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
