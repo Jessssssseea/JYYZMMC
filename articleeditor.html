@@ -4,10 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDF 论文集排版规划工具 v9</title>
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
-    <script src="https://unpkg.com/@pdf-lib/fontkit@1.1.1/dist/fontkit.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js">
+    </script>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js">
+    </script>
+    <script src="https://unpkg.com/@pdf-lib/fontkit@1.1.1/dist/fontkit.umd.min.js">
+    </script>
     <style>
         :root {
             --bg-color: #f3f4f6;
@@ -23,7 +27,7 @@
             margin: 0;
             padding: 20px;
             color: var(--text-main);
-            user-select: none; 
+            user-select: none;
         }
         header {
             display: flex;
@@ -33,12 +37,19 @@
             background: white;
             padding: 15px 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             flex-wrap: wrap;
             gap: 10px;
         }
-        h1 { margin: 0; font-size: 1.2rem; }
-        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
+        h1 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
         .btn {
             background-color: var(--primary);
             color: white;
@@ -49,12 +60,25 @@
             font-size: 0.9rem;
             transition: background 0.2s;
         }
-        .btn:hover { background-color: var(--primary-hover); }
-        .btn-secondary { background-color: #6b7280; }
-        .btn-secondary:hover { background-color: #4b5563; }
-        .btn-success { background-color: #10b981; }
-        .btn-success:hover { background-color: #059669; }
-        .btn:disabled { background-color: #cbd5e1; cursor: not-allowed; }
+        .btn:hover {
+            background-color: var(--primary-hover);
+        }
+        .btn-secondary {
+            background-color: #6b7280;
+        }
+        .btn-secondary:hover {
+            background-color: #4b5563;
+        }
+        .btn-success {
+            background-color: #10b981;
+        }
+        .btn-success:hover {
+            background-color: #059669;
+        }
+        .btn:disabled {
+            background-color: #cbd5e1;
+            cursor: not-allowed;
+        }
 
         #main-container {
             display: flex;
@@ -80,10 +104,16 @@
             cursor: grab;
             transition: transform 0.2s;
         }
-        .pdf-card:active { cursor: grabbing; }
-        .pdf-card.sortable-ghost { opacity: 0.3; }
-        .pdf-card.sortable-chosen { transform: scale(1.03); }
-        
+        .pdf-card:active {
+            cursor: grabbing;
+        }
+        .pdf-card.sortable-ghost {
+            opacity: 0.3;
+        }
+        .pdf-card.sortable-chosen {
+            transform: scale(1.03);
+        }
+
         .stack-layer {
             position: absolute;
             width: 100%;
@@ -91,11 +121,22 @@
             background: white;
             border: 1px solid var(--border-color);
             border-radius: 4px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-        .stack-layer:nth-child(1) { transform: translate(4px, 4px); z-index: 1; }
-        .stack-layer:nth-child(2) { transform: translate(2px, 2px); z-index: 2; }
-        .stack-layer:nth-child(3) { z-index: 3; display: flex; flex-direction: column; overflow: hidden; }
+        .stack-layer:nth-child(1) {
+            transform: translate(4px, 4px);
+            z-index: 1;
+        }
+        .stack-layer:nth-child(2) {
+            transform: translate(2px, 2px);
+            z-index: 2;
+        }
+        .stack-layer:nth-child(3) {
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
 
         .card-preview {
             flex: 1;
@@ -129,15 +170,21 @@
             line-height: 1.2em;
             user-select: text;
         }
-        .card-title:hover { border-color: #cbd5e1; background: #f8fafc; }
+        .card-title:hover {
+            border-color: #cbd5e1;
+            background: #f8fafc;
+        }
         .card-title:focus {
             outline: none;
             border-color: var(--primary);
             background-color: #fff;
-            max-height: 100px; 
+            max-height: 100px;
             overflow: visible;
         }
-        .card-pages { color: var(--text-sub); font-size: 0.7rem; }
+        .card-pages {
+            color: var(--text-sub);
+            font-size: 0.7rem;
+        }
         .card-range {
             color: var(--primary);
             font-weight: bold;
@@ -159,8 +206,11 @@
         #preview-modal {
             display: none;
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
             z-index: 100;
             justify-content: center;
             align-items: center;
@@ -174,7 +224,7 @@
             background: #525659;
             border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
         #pdf-preview-iframe {
             width: 100%;
@@ -184,7 +234,8 @@
         }
         #modal-close {
             position: absolute;
-            top: 20px; right: 30px;
+            top: 20px;
+            right: 30px;
             color: white;
             font-size: 2.5rem;
             cursor: pointer;
@@ -192,8 +243,10 @@
             line-height: 1;
             transition: color 0.2s;
         }
-        #modal-close:hover { color: #f87171; }
-        
+        #modal-close:hover {
+            color: #f87171;
+        }
+
         .loading-spinner {
             border: 4px solid #f3f3f3;
             border-top: 4px solid var(--primary);
@@ -202,7 +255,14 @@
             height: 40px;
             animation: spin 1s linear infinite;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
 <body>
@@ -238,11 +298,12 @@
     </div>
 
     <script>
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+            'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-        let pdfDataStore = []; 
-        let currentStartPage = 1; 
-        let currentPreviewUrl = null; 
+        let pdfDataStore = [];
+        let currentStartPage = 1;
+        let currentPreviewUrl = null;
 
         const container = document.getElementById('main-container');
         const emptyState = document.getElementById('empty-state');
@@ -250,8 +311,7 @@
         const previewIframe = document.getElementById('pdf-preview-iframe');
 
         function getCache() {
-            try { return JSON.parse(localStorage.getItem('pdf_sort_cache_v9') || '[]'); } 
-            catch (e) { return []; }
+            try { return JSON.parse(localStorage.getItem('pdf_sort_cache_v9') || '[]'); } catch (e) { return []; }
         }
 
         function saveCache() {
@@ -262,7 +322,8 @@
         }
 
         async function handleFiles(files) {
-            const pdfFiles = Array.from(files).filter(f => f.type === 'application/pdf' || f.name.endsWith('.pdf'));
+            const pdfFiles = Array.from(files).filter(f => f.type === 'application/pdf' || f.name.endsWith(
+                '.pdf'));
             if (pdfFiles.length === 0) return;
 
             if (emptyState.parentNode === container) container.removeChild(emptyState);
@@ -271,8 +332,9 @@
             const cachedOrder = getCache();
             const existingNames = pdfDataStore.map(d => d.name);
             const newFiles = pdfFiles.filter(f => !existingNames.includes(f.name));
-            
-            if(newFiles.length === 0) { alert("这些文件已经添加过了。"); return; }
+
+            if (newFiles.length === 0) { alert("这些文件已经添加过了。");
+                return; }
 
             if (pdfDataStore.length === 0 && cachedOrder.length > 0) {
                 const cachedNames = cachedOrder.map(c => c.name);
@@ -289,7 +351,7 @@
             for (let i = 0; i < newFiles.length; i++) {
                 const file = newFiles[i];
                 const tempId = 'pdf_' + Date.now() + '_' + i;
-                
+
                 const cachedItem = cachedOrder.find(c => c.name === file.name);
                 const defaultTitle = file.name.replace(/\.pdf$/i, '');
                 const customTitle = cachedItem ? cachedItem.title : defaultTitle;
@@ -311,23 +373,24 @@
                         </div>
                     </div>
                 `;
-                
+
                 const titleEl = card.querySelector('.card-title');
                 titleEl.addEventListener('blur', () => saveTitleEdit(tempId, titleEl));
                 titleEl.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') { e.preventDefault(); titleEl.blur(); }
+                    if (e.key === 'Enter') { e.preventDefault();
+                        titleEl.blur(); }
                 });
 
                 card.ondblclick = (e) => {
                     if (!e.target.classList.contains('card-title')) openNativePreview(tempId);
                 };
-                
+
                 container.appendChild(card);
 
                 try {
                     const arrayBuffer = await file.arrayBuffer();
-                    const pdfDoc = await pdfjsLib.getDocument({data: arrayBuffer.slice(0)}).promise;
-                    
+                    const pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer.slice(0) }).promise;
+
                     pdfDataStore.push({
                         id: tempId,
                         file: file,
@@ -336,15 +399,16 @@
                         total_pages: pdfDoc.numPages,
                         _pdfDoc: pdfDoc
                     });
-                    
+
                     card.querySelector('.card-pages').innerText = `共 ${pdfDoc.numPages} 页`;
-                    await renderThumbnail({id: tempId, _pdfDoc: pdfDoc});
-                    
+                    await renderThumbnail({ id: tempId, _pdfDoc: pdfDoc });
+
                 } catch (err) {
                     console.error("解析PDF失败:", file.name, err);
                     card.querySelector('.card-pages').innerText = "解析失败";
                     card.querySelector('.card-range').innerText = "无法计算";
-                    pdfDataStore.push({ id: tempId, file: file, name: file.name, customTitle: customTitle, total_pages: 0, _pdfDoc: null });
+                    pdfDataStore.push({ id: tempId, file: file, name: file.name, customTitle: customTitle,
+                        total_pages: 0, _pdfDoc: null });
                 }
             }
 
@@ -365,7 +429,7 @@
         document.getElementById('folder-input').addEventListener('change', async (e) => {
             if (pdfDataStore.length === 0) container.innerHTML = '<div class="loading-spinner"></div>';
             await handleFiles(e.target.files);
-            e.target.value = ''; 
+            e.target.value = '';
         });
         document.getElementById('file-input').addEventListener('change', async (e) => {
             await handleFiles(e.target.files);
@@ -373,19 +437,24 @@
         });
 
         ['dragenter', 'dragover'].forEach(eventName => {
-            document.body.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); container.classList.add('drag-over'); });
+            document.body.addEventListener(eventName, (e) => { e.preventDefault();
+                e.stopPropagation();
+                container.classList.add('drag-over'); });
         });
         ['dragleave', 'drop'].forEach(eventName => {
-            document.body.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); if (e.target === document.body || eventName === 'drop') container.classList.remove('drag-over'); });
+            document.body.addEventListener(eventName, (e) => { e.preventDefault();
+                e.stopPropagation(); if (e.target === document.body || eventName === 'drop') container.classList
+                    .remove('drag-over'); });
         });
-        document.body.addEventListener('drop', async (e) => { if (e.dataTransfer.files.length > 0) await handleFiles(e.dataTransfer.files); });
+        document.body.addEventListener('drop', async (e) => { if (e.dataTransfer.files.length > 0) await handleFiles(e
+                .dataTransfer.files); });
 
         function initSortable() {
             Sortable.create(container, {
                 animation: 150,
                 ghostClass: 'sortable-ghost',
                 chosenClass: 'sortable-chosen',
-                onEnd: function (evt) {
+                onEnd: function(evt) {
                     if (evt.item.classList.contains('pdf-card')) {
                         const cards = Array.from(container.querySelectorAll('.pdf-card'));
                         const newOrder = cards.map(card => card.dataset.id);
@@ -406,10 +475,11 @@
                 const context = canvas.getContext('2d');
                 canvas.width = viewport.width;
                 canvas.height = viewport.height;
-                await page.render({canvasContext: context, viewport: viewport}).promise;
+                await page.render({ canvasContext: context, viewport: viewport }).promise;
                 const previewDiv = document.getElementById(`preview-${data.id}`);
-                if (previewDiv) { previewDiv.innerHTML = ''; previewDiv.appendChild(canvas); }
-            } catch(e) { console.error("渲染缩略图失败:", e); }
+                if (previewDiv) { previewDiv.innerHTML = '';
+                    previewDiv.appendChild(canvas); }
+            } catch (e) { console.error("渲染缩略图失败:", e); }
         }
 
         function updatePageNumbers() {
@@ -418,27 +488,32 @@
                 const start = currentPage;
                 const end = currentPage + data.total_pages - 1;
                 const rangeEl = document.getElementById(`range-${data.id}`);
-                if (rangeEl) rangeEl.innerText = data.total_pages > 0 ? `排在: ${start} - ${end} 页` : "页数未知";
+                if (rangeEl) rangeEl.innerText = data.total_pages > 0 ? `排在: ${start} - ${end} 页` :
+                    "页数未知";
                 currentPage = end + 1;
             });
         }
 
         function openNativePreview(id) {
             const data = pdfDataStore.find(d => d.id === id);
-            if (!data || !data.file) { alert("该文件无法预览。"); return; }
+            if (!data || !data.file) { alert("该文件无法预览。");
+                return; }
             if (currentPreviewUrl) URL.revokeObjectURL(currentPreviewUrl);
             currentPreviewUrl = URL.createObjectURL(data.file);
             previewIframe.src = currentPreviewUrl;
             previewModal.style.display = 'flex';
         }
+
         function closeModal() {
             previewModal.style.display = 'none';
-            previewIframe.src = ''; 
-            if (currentPreviewUrl) { URL.revokeObjectURL(currentPreviewUrl); currentPreviewUrl = null; }
+            previewIframe.src = '';
+            if (currentPreviewUrl) { URL.revokeObjectURL(currentPreviewUrl);
+                currentPreviewUrl = null; }
         }
 
         function exportConfig() {
-            if (pdfDataStore.length === 0) { alert("没有可导出的数据！"); return; }
+            if (pdfDataStore.length === 0) { alert("没有可导出的数据！");
+                return; }
             let currentPage = currentStartPage;
             let csvContent = "文件名,论文标题,起始页,结束页,总页数\n";
             pdfDataStore.forEach(data => {
@@ -448,15 +523,18 @@
                 csvContent += `${data.name},${safeTitle},${start},${end},${data.total_pages}\n`;
                 currentPage = end + 1;
             });
-            const blob = new Blob(["\ufeff" + csvContent], {type: 'text/csv;charset=utf-8;'});
+            const blob = new Blob(["\ufeff" + csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
             link.download = "论文集页码规划表.csv";
-            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         async function mergeAndExportPDF() {
-            if (pdfDataStore.length === 0) { alert("没有可合并的PDF文件！"); return; }
+            if (pdfDataStore.length === 0) { alert("没有可合并的PDF文件！");
+                return; }
             const btn = document.getElementById('merge-export-btn');
             const originalText = btn.innerText;
             btn.innerText = '处理中...';
@@ -469,9 +547,10 @@
                 btn.innerText = '加载中文字体...';
                 let customFont = null;
                 let fontLoaded = false;
-                
+
                 try {
-                    const fontUrl = 'https://cdn.jsdelivr.net/gh/notofonts/noto-cjk@main/Sans/OTF/SimplifiedChinese/NotoSansCJKsc-Regular.otf';
+                    const fontUrl =
+                        'https://cdn.jsdelivr.net/gh/notofonts/noto-cjk@main/Sans/OTF/SimplifiedChinese/NotoSansCJKsc-Regular.otf';
                     const fontBytes = await fetch(fontUrl).then(res => {
                         if (!res.ok) throw new Error('Font fetch failed');
                         return res.arrayBuffer();
@@ -495,7 +574,7 @@
                     const pdfDoc = await PDFDocument.load(arrayBuffer);
                     const copiedPages = await mergedPdf.copyPages(pdfDoc, pdfDoc.getPageIndices());
                     copiedPages.forEach(page => mergedPdf.addPage(page));
-                    
+
                     tocEntries.push({
                         title: data.customTitle,
                         pageRef: copiedPages[0].ref,
@@ -508,67 +587,85 @@
                     btn.innerText = '生成目录页...';
                     const entriesPerPage = 25;
                     const tocPageCount = Math.max(1, Math.ceil(tocEntries.length / entriesPerPage));
-                    
+
                     const tocPages = [];
-                    for(let i = 0; i < tocPageCount; i++) {
-                        tocPages.push(mergedPdf.insertPage(i, [595.28, 841.89])); 
+                    for (let i = 0; i < tocPageCount; i++) {
+                        tocPages.push(mergedPdf.insertPage(i, [595.28, 841.89]));
                     }
 
                     const fontSize = 12;
                     const margin = 50;
                     const lineHeight = 24;
-                    
+
                     for (let i = 0; i < tocPages.length; i++) {
                         const page = tocPages[i];
                         let y = page.getHeight() - margin - 20;
-                        
+
                         if (i === 0) {
-                            page.drawText('目 录', { x: page.getWidth() / 2 - 30, y: y + 10, size: 20, font: customFont, color: rgb(0,0,0) });
+                            page.drawText('目 录', { x: page.getWidth() / 2 - 30, y: y + 10, size: 20,
+                                font: customFont, color: rgb(0, 0, 0) });
                             y -= 20;
                         }
 
                         const startIdx = i * entriesPerPage;
                         const endIdx = Math.min(startIdx + entriesPerPage, tocEntries.length);
-                        
+
                         for (let j = startIdx; j < endIdx; j++) {
                             const entry = tocEntries[j];
-                            const displayPageNum = entry.pageIndex + tocPageCount + 1; 
-                            
+                            const displayPageNum = entry.pageIndex + tocPageCount + 1;
+
+                            // 截断过长的标题，确保有空间放点号和页码
                             let titleText = entry.title;
-                            const maxWidth = page.getWidth() - margin * 2 - 80;
-                            while (customFont.widthOfTextAtSize(titleText, fontSize) > maxWidth && titleText.length > 0) {
+                            const pageNumStr = displayPageNum.toString();
+                            const pageNumWidth = customFont.widthOfTextAtSize(pageNumStr, fontSize);
+                            // 为页码和点号预留足够空间：页码宽度 + 点号区域至少40个单位 + 两边间距
+                            const reservedForRight = pageNumWidth + 50;
+                            const maxWidth = page.getWidth() - margin * 2 - reservedForRight;
+                            while (customFont.widthOfTextAtSize(titleText, fontSize) > maxWidth && titleText
+                                .length > 0) {
                                 titleText = titleText.substring(0, titleText.length - 1);
                             }
                             if (titleText !== entry.title) titleText += "...";
 
+                            // 重新测量截断后的标题宽度
                             const titleWidth = customFont.widthOfTextAtSize(titleText, fontSize);
-                            const pageNumStr = displayPageNum.toString();
-                            const pageNumWidth = customFont.widthOfTextAtSize(pageNumStr, fontSize);
-                            
-                            // 修复：确保点号正确地停在页码前面
-                            const dotStart = margin + titleWidth + 5;
-                            const dotEnd = page.getWidth() - margin - pageNumWidth - 5;
-                            const dotCount = Math.max(0, Math.floor((dotEnd - dotStart) / 3));
-                            const dotText = ' . '.repeat(dotCount);
-                            
-                            // 确保点号不会延伸到页码区域
-                            const dotActualWidth = customFont.widthOfTextAtSize(dotText, fontSize);
-                            const availableWidth = page.getWidth() - margin - titleWidth - pageNumWidth - 10; // 10是额外的边距
-                            
-                            if (dotActualWidth > availableWidth) {
-                                // 如果点号太长，截断它
-                                const maxDots = Math.floor(availableWidth / (customFont.widthOfTextAtSize(' . ', fontSize)));
-                                const truncatedDots = ' . '.repeat(Math.max(0, maxDots));
-                                page.drawText(titleText, { x: margin, y, size: fontSize, font: customFont, color: rgb(0.1,0.1,0.1) });
-                                page.drawText(truncatedDots, { x: margin + titleWidth + 5, y, size: fontSize, font: customFont, color: rgb(0.5,0.5,0.5) });
-                                page.drawText(pageNumStr, { x: page.getWidth() - margin - pageNumWidth, y, size: fontSize, font: customFont, color: rgb(0.1,0.1,0.1) });
-                            } else {
-                                page.drawText(titleText, { x: margin, y, size: fontSize, font: customFont, color: rgb(0.1,0.1,0.1) });
-                                page.drawText(dotText, { x: dotStart, y, size: fontSize, font: customFont, color: rgb(0.5,0.5,0.5) });
-                                page.drawText(pageNumStr, { x: page.getWidth() - margin - pageNumWidth, y, size: fontSize, font: customFont, color: rgb(0.1,0.1,0.1) });
+
+                            // 页码固定右对齐位置
+                            const pageNumX = page.getWidth() - margin - pageNumWidth;
+
+                            // 点号起始位置（标题后留6个单位间距）
+                            const dotStartX = margin + titleWidth + 6;
+
+                            // 点号结束位置（页码前留8个单位间距，确保不会侵入页码区域）
+                            const dotEndX = pageNumX - 8;
+
+                            // 点号可用宽度
+                            const dotAvailableWidth = Math.max(0, dotEndX - dotStartX);
+
+                            // 单个点号单元的宽度（' . ' = 空格+点+空格）
+                            const dotUnitStr = ' . ';
+                            const dotUnitWidth = customFont.widthOfTextAtSize(dotUnitStr, fontSize);
+
+                            // 精确计算能容纳的点号单元数量
+                            const maxDots = dotUnitWidth > 0 ? Math.floor(dotAvailableWidth / dotUnitWidth) :
+                                0;
+                            const dotText = dotUnitStr.repeat(Math.max(0, maxDots));
+
+                            // 绘制标题
+                            page.drawText(titleText, { x: margin, y, size: fontSize, font: customFont,
+                                color: rgb(0.1, 0.1, 0.1) });
+
+                            // 绘制点号（仅在有点号可绘制时）
+                            if (maxDots > 0 && dotText.length > 0) {
+                                page.drawText(dotText, { x: dotStartX, y, size: fontSize, font: customFont,
+                                    color: rgb(0.5, 0.5, 0.5) });
                             }
 
-                            // 添加超链接
+                            // 绘制页码（始终固定在右侧）
+                            page.drawText(pageNumStr, { x: pageNumX, y, size: fontSize, font: customFont,
+                                color: rgb(0.1, 0.1, 0.1) });
+
+                            // 添加超链接（覆盖整行：从左边距到右边距）
                             const link = mergedPdf.context.obj({
                                 Type: 'Annot',
                                 Subtype: 'Link',
@@ -576,7 +673,7 @@
                                 Border: [0, 0, 0],
                                 Dest: [entry.pageRef, 'Fit']
                             });
-                            
+
                             const annotsKey = PDFName.of('Annots');
                             let annots = page.node.get(annotsKey);
                             if (!annots) {
@@ -590,7 +687,9 @@
                         }
                     }
                 } else {
-                    alert("警告：中文字体加载失败（可能是由于直接双击打开HTML文件的网络限制）。已为您合并PDF，但未生成目录。如需生成目录，请尝试将此HTML文件上传至服务器或使用本地服务器（如VSCode Live Server）打开。");
+                    alert(
+                        "警告：中文字体加载失败（可能是由于直接双击打开HTML文件的网络限制）。已为您合并PDF，但未生成目录。如需生成目录，请尝试将此HTML文件上传至服务器或使用本地服务器（如VSCode Live Server）打开。"
+                        );
                 }
 
                 btn.innerText = '正在导出...';
@@ -599,7 +698,9 @@
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(blob);
                 link.download = '合并后的论文集.pdf';
-                document.body.appendChild(link); link.click(); document.body.removeChild(link);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
 
             } catch (error) {
                 console.error("合并PDF失败:", error);
