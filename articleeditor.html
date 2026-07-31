@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF 论文集排版规划工具 v8</title>
+    <title>PDF 论文集排版规划工具 v9</title>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
@@ -250,14 +250,14 @@
         const previewIframe = document.getElementById('pdf-preview-iframe');
 
         function getCache() {
-            try { return JSON.parse(localStorage.getItem('pdf_sort_cache_v8') || '[]'); } 
+            try { return JSON.parse(localStorage.getItem('pdf_sort_cache_v9') || '[]'); } 
             catch (e) { return []; }
         }
 
         function saveCache() {
             try {
                 const cacheData = pdfDataStore.map(d => ({ name: d.name, title: d.customTitle }));
-                localStorage.setItem('pdf_sort_cache_v8', JSON.stringify(cacheData));
+                localStorage.setItem('pdf_sort_cache_v9', JSON.stringify(cacheData));
             } catch (e) { console.warn("缓存保存失败"); }
         }
 
@@ -545,16 +545,30 @@
                             const pageNumStr = displayPageNum.toString();
                             const pageNumWidth = customFont.widthOfTextAtSize(pageNumStr, fontSize);
                             
+                            // 修复：确保点号正确地停在页码前面
                             const dotStart = margin + titleWidth + 5;
                             const dotEnd = page.getWidth() - margin - pageNumWidth - 5;
                             const dotCount = Math.max(0, Math.floor((dotEnd - dotStart) / 3));
                             const dotText = ' . '.repeat(dotCount);
                             
-                            page.drawText(titleText, { x: margin, y, size: fontSize, font: customFont, color: rgb(0.1,0.1,0.1) });
-                            page.drawText(dotText, { x: dotStart, y, size: fontSize, font: customFont, color: rgb(0.5,0.5,0.5) });
-                            page.drawText(pageNumStr, { x: page.getWidth() - margin - pageNumWidth, y, size: fontSize, font: customFont, color: rgb(0.1,0.1,0.1) });
+                            // 确保点号不会延伸到页码区域
+                            const dotActualWidth = customFont.widthOfTextAtSize(dotText, fontSize);
+                            const availableWidth = page.getWidth() - margin - titleWidth - pageNumWidth - 10; // 10是额外的边距
+                            
+                            if (dotActualWidth > availableWidth) {
+                                // 如果点号太长，截断它
+                                const maxDots = Math.floor(availableWidth / (customFont.widthOfTextAtSize(' . ', fontSize)));
+                                const truncatedDots = ' . '.repeat(Math.max(0, maxDots));
+                                page.drawText(titleText, { x: margin, y, size: fontSize, font: customFont, color: rgb(0.1,0.1,0.1) });
+                                page.drawText(truncatedDots, { x: margin + titleWidth + 5, y, size: fontSize, font: customFont, color: rgb(0.5,0.5,0.5) });
+                                page.drawText(pageNumStr, { x: page.getWidth() - margin - pageNumWidth, y, size: fontSize, font: customFont, color: rgb(0.1,0.1,0.1) });
+                            } else {
+                                page.drawText(titleText, { x: margin, y, size: fontSize, font: customFont, color: rgb(0.1,0.1,0.1) });
+                                page.drawText(dotText, { x: dotStart, y, size: fontSize, font: customFont, color: rgb(0.5,0.5,0.5) });
+                                page.drawText(pageNumStr, { x: page.getWidth() - margin - pageNumWidth, y, size: fontSize, font: customFont, color: rgb(0.1,0.1,0.1) });
+                            }
 
-                            // 修复：使用更兼容的底层方式添加超链接
+                            // 添加超链接
                             const link = mergedPdf.context.obj({
                                 Type: 'Annot',
                                 Subtype: 'Link',
