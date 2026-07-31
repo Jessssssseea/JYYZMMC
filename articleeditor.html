@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF 论文集排版规划工具 v3</title>
+    <title>PDF 论文集排版规划工具 v6</title>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <!-- 修复：更正 fontkit 的 CDN 路径 -->
+    <script src="https://unpkg.com/@pdf-lib/fontkit@1.1.1/dist/fontkit.umd.min.js"></script>
     <style>
         :root {
             --bg-color: #f3f4f6;
@@ -22,6 +25,7 @@
             margin: 0;
             padding: 20px;
             color: var(--text-main);
+            user-select: none; 
         }
         header {
             display: flex;
@@ -32,8 +36,11 @@
             padding: 15px 20px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            flex-wrap: wrap;
+            gap: 10px;
         }
         h1 { margin: 0; font-size: 1.2rem; }
+        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
         .btn {
             background-color: var(--primary);
             color: white;
@@ -42,12 +49,14 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 0.9rem;
-            margin-left: 10px;
             transition: background 0.2s;
         }
         .btn:hover { background-color: var(--primary-hover); }
         .btn-secondary { background-color: #6b7280; }
         .btn-secondary:hover { background-color: #4b5563; }
+        .btn-success { background-color: #10b981; }
+        .btn-success:hover { background-color: #059669; }
+        .btn:disabled { background-color: #cbd5e1; cursor: not-allowed; }
 
         #main-container {
             display: flex;
@@ -59,9 +68,13 @@
             border: 2px dashed #d1d5db;
             border-radius: 8px;
             background-color: #fafafa;
+            transition: border-color 0.2s, background-color 0.2s;
+        }
+        #main-container.drag-over {
+            border-color: var(--primary);
+            background-color: #eff6ff;
         }
 
-        /* 堆叠卡片样式 */
         .pdf-card {
             position: relative;
             width: 140px;
@@ -82,7 +95,6 @@
             border-radius: 4px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        /* 模拟堆叠厚度 */
         .stack-layer:nth-child(1) { transform: translate(4px, 4px); z-index: 1; }
         .stack-layer:nth-child(2) { transform: translate(2px, 2px); z-index: 2; }
         .stack-layer:nth-child(3) { z-index: 3; display: flex; flex-direction: column; overflow: hidden; }
@@ -108,16 +120,26 @@
         }
         .card-title {
             font-weight: 600;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
             margin-bottom: 4px;
+            cursor: text;
+            border: 1px dashed transparent;
+            border-radius: 2px;
+            padding: 1px 2px;
+            word-break: break-all;
+            max-height: 2.4em;
+            overflow: hidden;
+            line-height: 1.2em;
+            user-select: text;
         }
-        .card-pages {
-            color: var(--text-sub);
-            font-size: 0.7rem;
+        .card-title:hover { border-color: #cbd5e1; background: #f8fafc; }
+        .card-title:focus {
+            outline: none;
+            border-color: var(--primary);
+            background-color: #fff;
+            max-height: 100px; 
+            overflow: visible;
         }
-        /* 实时页码区间高亮显示 */
+        .card-pages { color: var(--text-sub); font-size: 0.7rem; }
         .card-range {
             color: var(--primary);
             font-weight: bold;
@@ -136,7 +158,6 @@
             margin-top: 100px;
         }
 
-        /* 模态预览框 - 使用 iframe 承载浏览器原生预览 */
         #preview-modal {
             display: none;
             position: fixed;
@@ -157,7 +178,6 @@
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
-        /* 核心修改：iframe 撑满容器 */
         #pdf-preview-iframe {
             width: 100%;
             height: 100%;
@@ -191,153 +211,209 @@
 
     <header>
         <h1>📚 PDF 论文集排版规划工具</h1>
-        <div>
-            <button class="btn btn-secondary" onclick="document.getElementById('folder-input').click()">1. 选择PDF文件夹</button>
+        <div class="btn-group">
+            <button class="btn btn-secondary" onclick="document.getElementById('folder-input').click()">选择文件夹</button>
             <input type="file" id="folder-input" webkitdirectory multiple style="display:none" accept=".pdf">
-            <button class="btn" onclick="exportConfig()">2. 确认并导出页码表</button>
+            <button class="btn btn-secondary" onclick="document.getElementById('file-input').click()">添加文件</button>
+            <input type="file" id="file-input" multiple style="display:none" accept=".pdf">
+            <button class="btn" onclick="exportConfig()">导出页码表</button>
+            <button class="btn btn-success" id="merge-export-btn" onclick="mergeAndExportPDF()">合并导出 PDF (含目录)</button>
         </div>
     </header>
+    <div style="margin-bottom: 10px; color: #6b7280; font-size: 0.85rem;">
+        💡 提示：直接点击卡片上的文件名可修改论文标题，修改后会自动保存。导出合并PDF时将自动生成可点击跳转的目录页。
+    </div>
 
     <div id="main-container">
         <div id="empty-state">
-            <h2>👆 请点击上方按钮选择包含PDF的文件夹</h2>
+            <h2>👆 请选择文件夹、添加文件，或直接拖拽 PDF 到此处</h2>
             <p>加载后，你可以拖动卡片调整顺序，双击卡片调用浏览器原生预览。</p>
             <p>系统会自动识别页数并实时计算合并后的页码区间。</p>
         </div>
     </div>
 
-    <!-- 预览模态框 -->
     <div id="preview-modal">
         <span id="modal-close" onclick="closeModal()">&times;</span>
         <div id="preview-content-wrapper">
-            <!-- 使用 iframe 嵌入 PDF -->
             <iframe id="pdf-preview-iframe" src=""></iframe>
         </div>
     </div>
 
     <script>
-        // 配置 pdf.js 的 worker (仅用于初始获取页数和缩略图)
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-        let pdfDataStore = []; // 存储解析后的PDF数据
-        let currentStartPage = 1; // 全局起始页码
-        let currentPreviewUrl = null; // 记录当前预览的 ObjectURL 以便释放内存
+        let pdfDataStore = []; 
+        let currentStartPage = 1; 
+        let currentPreviewUrl = null; 
 
-        // DOM 元素
         const container = document.getElementById('main-container');
         const emptyState = document.getElementById('empty-state');
         const previewModal = document.getElementById('preview-modal');
         const previewIframe = document.getElementById('pdf-preview-iframe');
 
-        // 1. 处理文件夹选择
-        document.getElementById('folder-input').addEventListener('change', async (e) => {
-            const files = Array.from(e.target.files).filter(f => f.type === 'application/pdf' || f.name.endsWith('.pdf'));
-            if (files.length === 0) {
-                alert("未在所选文件夹中找到PDF文件。");
-                return;
+        // 安全读取缓存 (解决 file:// 协议下的安全限制问题)
+        function getCache() {
+            try {
+                return JSON.parse(localStorage.getItem('pdf_sort_cache_v6') || '[]');
+            } catch (e) {
+                console.warn("无法读取本地缓存:", e);
+                return [];
             }
+        }
 
-            container.innerHTML = '<div class="loading-spinner"></div>';
+        // 安全写入缓存
+        function saveCache() {
+            try {
+                const cacheData = pdfDataStore.map(d => ({ name: d.name, title: d.customTitle }));
+                localStorage.setItem('pdf_sort_cache_v6', JSON.stringify(cacheData));
+            } catch (e) {
+                console.warn("无法写入本地缓存，排序和标题修改不会被记忆:", e);
+            }
+        }
+
+        // 1. 统一的文件处理函数
+        async function handleFiles(files) {
+            const pdfFiles = Array.from(files).filter(f => f.type === 'application/pdf' || f.name.endsWith('.pdf'));
+            if (pdfFiles.length === 0) return;
+
+            if (emptyState.parentNode === container) container.removeChild(emptyState);
+            if (pdfDataStore.length === 0 && container.querySelector('.loading-spinner')) container.innerHTML = '';
+
+            const cachedOrder = getCache();
+            const existingNames = pdfDataStore.map(d => d.name);
+            const newFiles = pdfFiles.filter(f => !existingNames.includes(f.name));
             
-            // 尝试读取缓存排序
-            const cachedOrder = JSON.parse(localStorage.getItem('pdf_sort_cache_v3') || '[]');
-            const cachedNames = cachedOrder.map(item => item.name);
-            const currentNames = files.map(f => f.name);
+            if(newFiles.length === 0) { alert("这些文件已经添加过了。"); return; }
 
-            // 判断文件集合是否一致
-            const isSameSet = cachedNames.length === currentNames.length && 
-                              cachedNames.every(name => currentNames.includes(name));
-
-            let sortedFiles = [];
-            if (isSameSet) {
-                cachedOrder.forEach(cachedItem => {
-                    let file = files.find(f => f.name === cachedItem.name);
-                    if (file) sortedFiles.push(file);
+            // 如果是第一次加载且有缓存，按缓存顺序排
+            if (pdfDataStore.length === 0 && cachedOrder.length > 0) {
+                const cachedNames = cachedOrder.map(c => c.name);
+                newFiles.sort((a, b) => {
+                    const idxA = cachedNames.indexOf(a.name);
+                    const idxB = cachedNames.indexOf(b.name);
+                    if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+                    if (idxA !== -1) return -1;
+                    if (idxB !== -1) return 1;
+                    return a.name.localeCompare(b.name);
                 });
-            } else {
-                sortedFiles = [...files].sort((a, b) => a.name.localeCompare(b.name));
             }
 
-            // 解析PDF并构建数据
-            pdfDataStore = [];
-            for (let i = 0; i < sortedFiles.length; i++) {
-                const file = sortedFiles[i];
-                try {
-                    const arrayBuffer = await file.arrayBuffer();
-                    const pdfDoc = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
-                    pdfDataStore.push({
-                        id: 'pdf_' + i,
-                        file: file,
-                        name: file.name,
-                        total_pages: pdfDoc.numPages,
-                        _pdfDoc: pdfDoc // 缓存文档对象用于生成缩略图
-                    });
-                } catch (err) {
-                    console.error("解析PDF失败:", file.name, err);
-                    pdfDataStore.push({
-                        id: 'pdf_' + i,
-                        file: file,
-                        name: file.name + " (解析失败)",
-                        total_pages: 0,
-                        _pdfDoc: null
-                    });
-                }
-            }
+            for (let i = 0; i < newFiles.length; i++) {
+                const file = newFiles[i];
+                const tempId = 'pdf_' + Date.now() + '_' + i;
+                
+                const cachedItem = cachedOrder.find(c => c.name === file.name);
+                const defaultTitle = file.name.replace(/\.pdf$/i, '');
+                const customTitle = cachedItem ? cachedItem.title : defaultTitle;
 
-            renderCards();
-        });
-
-        // 2. 渲染卡片并初始化拖拽
-        function renderCards() {
-            container.innerHTML = '';
-            if (pdfDataStore.length === 0) {
-                container.appendChild(emptyState);
-                return;
-            }
-
-            updatePageNumbers();
-
-            pdfDataStore.forEach(data => {
                 const card = document.createElement('div');
                 card.className = 'pdf-card';
-                card.dataset.id = data.id;
-                
+                card.dataset.id = tempId;
                 card.innerHTML = `
                     <div class="stack-layer"></div>
                     <div class="stack-layer"></div>
                     <div class="stack-layer">
-                        <div class="card-preview" id="preview-${data.id}">
+                        <div class="card-preview" id="preview-${tempId}">
                             <div class="loading-spinner" style="width:20px;height:20px;border-width:2px;"></div>
                         </div>
                         <div class="card-info">
-                            <div class="card-title" title="${data.name}">${data.name}</div>
-                            <div class="card-pages">共 ${data.total_pages} 页</div>
-                            <div class="card-range" id="range-${data.id}">计算中...</div>
+                            <div class="card-title" contenteditable="true" spellcheck="false" title="点击编辑标题">${customTitle}</div>
+                            <div class="card-pages">解析中...</div>
+                            <div class="card-range" id="range-${tempId}">计算中...</div>
                         </div>
                     </div>
                 `;
                 
-                card.ondblclick = () => openNativePreview(data.id);
+                const titleEl = card.querySelector('.card-title');
+                titleEl.addEventListener('blur', () => saveTitleEdit(tempId, titleEl));
+                titleEl.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') { e.preventDefault(); titleEl.blur(); }
+                });
+
+                card.ondblclick = (e) => {
+                    if (!e.target.classList.contains('card-title')) openNativePreview(tempId);
+                };
+                
                 container.appendChild(card);
 
-                renderThumbnail(data);
-            });
+                try {
+                    const arrayBuffer = await file.arrayBuffer();
+                    // 注意：pdfjsLib 需要传递 buffer 的副本，否则后续 pdf-lib 加载会报错
+                    const pdfDoc = await pdfjsLib.getDocument({data: arrayBuffer.slice(0)}).promise;
+                    
+                    const dataObj = {
+                        id: tempId,
+                        file: file,
+                        name: file.name,
+                        customTitle: customTitle,
+                        total_pages: pdfDoc.numPages,
+                        _pdfDoc: pdfDoc
+                    };
+                    pdfDataStore.push(dataObj);
+                    
+                    card.querySelector('.card-pages').innerText = `共 ${pdfDoc.numPages} 页`;
+                    await renderThumbnail(dataObj);
+                    
+                } catch (err) {
+                    console.error("解析PDF失败:", file.name, err);
+                    card.querySelector('.card-pages').innerText = "解析失败";
+                    card.querySelector('.card-range').innerText = "无法计算";
+                    pdfDataStore.push({ id: tempId, file: file, name: file.name, customTitle: customTitle, total_pages: 0, _pdfDoc: null });
+                }
+            }
 
-            // 初始化拖拽
+            if (!container.sortable) initSortable();
+            updatePageNumbers();
+            saveCache();
+        }
+
+        function saveTitleEdit(id, titleEl) {
+            const data = pdfDataStore.find(d => d.id === id);
+            if (data) {
+                data.customTitle = titleEl.innerText.trim() || data.name;
+                titleEl.innerText = data.customTitle;
+                saveCache();
+            }
+        }
+
+        document.getElementById('folder-input').addEventListener('change', async (e) => {
+            if (pdfDataStore.length === 0) container.innerHTML = '<div class="loading-spinner"></div>';
+            await handleFiles(e.target.files);
+            e.target.value = ''; 
+        });
+        document.getElementById('file-input').addEventListener('change', async (e) => {
+            await handleFiles(e.target.files);
+            e.target.value = '';
+        });
+
+        // 2. 全局拖拽接收
+        ['dragenter', 'dragover'].forEach(eventName => {
+            document.body.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); container.classList.add('drag-over'); });
+        });
+        ['dragleave', 'drop'].forEach(eventName => {
+            document.body.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); if (e.target === document.body || eventName === 'drop') container.classList.remove('drag-over'); });
+        });
+        document.body.addEventListener('drop', async (e) => { if (e.dataTransfer.files.length > 0) await handleFiles(e.dataTransfer.files); });
+
+        // 3. 初始化拖拽排序
+        function initSortable() {
             Sortable.create(container, {
                 animation: 150,
                 ghostClass: 'sortable-ghost',
                 chosenClass: 'sortable-chosen',
                 onEnd: function (evt) {
-                    const movedItem = pdfDataStore.splice(evt.oldIndex, 1)[0];
-                    pdfDataStore.splice(evt.newIndex, 0, movedItem);
-                    updatePageNumbers();
-                    saveCache();
+                    if (evt.item.classList.contains('pdf-card')) {
+                        const cards = Array.from(container.querySelectorAll('.pdf-card'));
+                        const newOrder = cards.map(card => card.dataset.id);
+                        pdfDataStore.sort((a, b) => newOrder.indexOf(a.id) - newOrder.indexOf(b.id));
+                        updatePageNumbers();
+                        saveCache();
+                    }
                 }
             });
         }
 
-        // 3. 渲染缩略图 (仅用一次，用于卡片展示)
+        // 4. 渲染缩略图
         async function renderThumbnail(data) {
             if (!data._pdfDoc) return;
             try {
@@ -347,103 +423,197 @@
                 const context = canvas.getContext('2d');
                 canvas.width = viewport.width;
                 canvas.height = viewport.height;
-
                 await page.render({canvasContext: context, viewport: viewport}).promise;
-                
                 const previewDiv = document.getElementById(`preview-${data.id}`);
-                if (previewDiv) {
-                    previewDiv.innerHTML = '';
-                    previewDiv.appendChild(canvas);
-                }
-            } catch(e) {
-                console.error("渲染缩略图失败:", e);
-            }
+                if (previewDiv) { previewDiv.innerHTML = ''; previewDiv.appendChild(canvas); }
+            } catch(e) { console.error("渲染缩略图失败:", e); }
         }
 
-        // 4. 实时计算并更新页码区间
+        // 5. 实时计算页码
         function updatePageNumbers() {
             let currentPage = currentStartPage;
             pdfDataStore.forEach(data => {
                 const start = currentPage;
                 const end = currentPage + data.total_pages - 1;
                 const rangeEl = document.getElementById(`range-${data.id}`);
-                
-                if (rangeEl) {
-                    if (data.total_pages > 0) {
-                        rangeEl.innerText = `排在: ${start} - ${end} 页`;
-                    } else {
-                        rangeEl.innerText = "页数未知";
-                    }
-                }
+                if (rangeEl) rangeEl.innerText = data.total_pages > 0 ? `排在: ${start} - ${end} 页` : "页数未知";
                 currentPage = end + 1;
             });
         }
 
-        // 5. 调用浏览器内置预览功能 (核心修改)
+        // 6. 预览
         function openNativePreview(id) {
             const data = pdfDataStore.find(d => d.id === id);
-            if (!data || !data.file) {
-                alert("该文件无法预览。");
-                return;
-            }
-
-            // 释放上一次预览的 URL，防止内存泄漏
-            if (currentPreviewUrl) {
-                URL.revokeObjectURL(currentPreviewUrl);
-            }
-
-            // 为当前 PDF 文件创建一个临时的本地 URL
+            if (!data || !data.file) { alert("该文件无法预览。"); return; }
+            if (currentPreviewUrl) URL.revokeObjectURL(currentPreviewUrl);
             currentPreviewUrl = URL.createObjectURL(data.file);
-            
-            // 将 URL 指向 iframe，浏览器会自动使用内置的 PDF 阅读器打开它
             previewIframe.src = currentPreviewUrl;
             previewModal.style.display = 'flex';
         }
-
         function closeModal() {
             previewModal.style.display = 'none';
-            previewIframe.src = ''; // 清空 src，停止渲染释放资源
-            
-            // 释放内存
-            if (currentPreviewUrl) {
-                URL.revokeObjectURL(currentPreviewUrl);
-                currentPreviewUrl = null;
-            }
+            previewIframe.src = ''; 
+            if (currentPreviewUrl) { URL.revokeObjectURL(currentPreviewUrl); currentPreviewUrl = null; }
         }
 
-        // 6. 缓存存储
-        function saveCache() {
-            const cacheData = pdfDataStore.map(d => ({name: d.name}));
-            localStorage.setItem('pdf_sort_cache_v3', JSON.stringify(cacheData));
-        }
-
-        // 7. 导出配置
+        // 7. 导出 CSV
         function exportConfig() {
-            if (pdfDataStore.length === 0) {
-                alert("没有可导出的数据！");
-                return;
-            }
-
+            if (pdfDataStore.length === 0) { alert("没有可导出的数据！"); return; }
             let currentPage = currentStartPage;
-            let csvContent = "文件名,起始页,结束页,总页数\n";
-            
+            let csvContent = "文件名,论文标题,起始页,结束页,总页数\n";
             pdfDataStore.forEach(data => {
                 const start = currentPage;
                 const end = currentPage + data.total_pages - 1;
-                csvContent += `${data.name},${start},${end},${data.total_pages}\n`;
+                const safeTitle = `"${data.customTitle.replace(/"/g, '""')}"`;
+                csvContent += `${data.name},${safeTitle},${start},${end},${data.total_pages}\n`;
                 currentPage = end + 1;
             });
-
             const blob = new Blob(["\ufeff" + csvContent], {type: 'text/csv;charset=utf-8;'});
             const link = document.createElement("a");
-            const url = URL.createObjectURL(blob);
-            link.setAttribute("href", url);
-            link.setAttribute("download", "论文集页码规划表.csv");
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            link.href = URL.createObjectURL(blob);
+            link.download = "论文集页码规划表.csv";
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
         }
+
+        // 8. 合并并导出 PDF (含目录)
+        async function mergeAndExportPDF() {
+            if (pdfDataStore.length === 0) { alert("没有可合并的PDF文件！"); return; }
+            const btn = document.getElementById('merge-export-btn');
+            const originalText = btn.innerText;
+            btn.innerText = '处理中...';
+            btn.disabled = true;
+
+            try {
+                const { PDFDocument, rgb, StandardFonts } = PDFLib;
+                const mergedPdf = await PDFDocument.create();
+
+                btn.innerText = '加载中文字体...';
+                let customFont;
+                
+                // 尝试加载中文字体，失败则回退到英文标准字体
+                try {
+                    // 使用 jsdelivr 上的 Noto Sans SC 字体 (OTF格式)
+                    const fontUrl = 'https://cdn.jsdelivr.net/gh/notofonts/noto-cjk@main/Sans/OTF/SimplifiedChinese/NotoSansCJKsc-Regular.otf';
+                    const fontBytes = await fetch(fontUrl).then(res => {
+                        if (!res.ok) throw new Error('Font fetch failed');
+                        return res.arrayBuffer();
+                    });
+                    
+                    if (typeof fontkit !== 'undefined') {
+                        mergedPdf.registerFontkit(fontkit);
+                        customFont = await mergedPdf.embedFont(fontBytes);
+                    } else {
+                        throw new Error('fontkit 未加载');
+                    }
+                } catch (fontErr) {
+                    console.error("中文字体加载失败，目录中文将无法显示:", fontErr);
+                    alert("警告：中文字体加载失败，目录中的中文可能显示为方块。这通常是由于网络限制。");
+                    customFont = await mergedPdf.embedFont(StandardFonts.Helvetica);
+                }
+
+                btn.innerText = '合并PDF页面...';
+                let currentPageIndex = 0;
+                const tocEntries = [];
+
+                for (const data of pdfDataStore) {
+                    if (!data.file || data.total_pages === 0) continue;
+                    const arrayBuffer = await data.file.arrayBuffer();
+                    const pdfDoc = await PDFDocument.load(arrayBuffer);
+                    const copiedPages = await mergedPdf.copyPages(pdfDoc, pdfDoc.getPageIndices());
+                    copiedPages.forEach(page => mergedPdf.addPage(page));
+                    
+                    tocEntries.push({
+                        title: data.customTitle,
+                        pageRef: copiedPages[0].ref,
+                        pageIndex: currentPageIndex
+                    });
+                    currentPageIndex += copiedPages.length;
+                }
+
+                btn.innerText = '生成目录页...';
+                const entriesPerPage = 25;
+                const tocPageCount = Math.max(1, Math.ceil(tocEntries.length / entriesPerPage));
+                
+                const tocPages = [];
+                for(let i = 0; i < tocPageCount; i++) {
+                    tocPages.push(mergedPdf.insertPage(i, [595.28, 841.89])); 
+                }
+
+                const fontSize = 12;
+                const margin = 50;
+                const lineHeight = 24;
+                
+                for (let i = 0; i < tocPages.length; i++) {
+                    const page = tocPages[i];
+                    let y = page.getHeight() - margin - 20;
+                    
+                    if (i === 0) {
+                        page.drawText('目 录', { x: page.getWidth() / 2 - 30, y: y + 10, size: 20, font: customFont, color: rgb(0,0,0) });
+                        y -= 20;
+                    }
+
+                    const startIdx = i * entriesPerPage;
+                    const endIdx = Math.min(startIdx + entriesPerPage, tocEntries.length);
+                    
+                    for (let j = startIdx; j < endIdx; j++) {
+                        const entry = tocEntries[j];
+                        const displayPageNum = entry.pageIndex + tocPageCount + 1; 
+                        
+                        let titleText = entry.title;
+                        const maxWidth = page.getWidth() - margin * 2 - 80;
+                        
+                        // 截断过长标题
+                        while (customFont.widthOfTextAtSize(titleText, fontSize) > maxWidth && titleText.length > 0) {
+                            titleText = titleText.substring(0, titleText.length - 1);
+                        }
+                        if (titleText !== entry.title) titleText += "...";
+
+                        const titleWidth = customFont.widthOfTextAtSize(titleText, fontSize);
+                        const pageNumStr = displayPageNum.toString();
+                        const pageNumWidth = customFont.widthOfTextAtSize(pageNumStr, fontSize);
+                        
+                        const dotStart = margin + titleWidth + 5;
+                        const dotEnd = page.getWidth() - margin - pageNumWidth - 5;
+                        const dotCount = Math.max(0, Math.floor((dotEnd - dotStart) / 3));
+                        const dotText = ' . '.repeat(dotCount);
+                        
+                        page.drawText(titleText, { x: margin, y, size: fontSize, font: customFont, color: rgb(0.1,0.1,0.1) });
+                        page.drawText(dotText, { x: dotStart, y, size: fontSize, font: customFont, color: rgb(0.5,0.5,0.5) });
+                        page.drawText(pageNumStr, { x: page.getWidth() - margin - pageNumWidth, y, size: fontSize, font: customFont, color: rgb(0.1,0.1,0.1) });
+
+                        // 添加点击跳转超链接
+                        const link = mergedPdf.context.obj({
+                            Type: 'Annot',
+                            Subtype: 'Link',
+                            Rect: [margin, y - 2, page.getWidth() - margin, y + fontSize + 2],
+                            Border: [0, 0, 0],
+                            A: { S: 'GoTo', D: [entry.pageRef, 'Fit'] }
+                        });
+                        page.node.addAnnotation(link);
+
+                        y -= lineHeight;
+                        if (y < margin) break;
+                    }
+                }
+
+                btn.innerText = '正在导出...';
+                const mergedPdfBytes = await mergedPdf.save();
+                const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = '合并后的论文集_含目录.pdf';
+                document.body.appendChild(link); link.click(); document.body.removeChild(link);
+
+            } catch (error) {
+                console.error("合并PDF失败:", error);
+                alert("合并PDF失败！请检查控制台(F12)获取详细报错信息。");
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        initSortable();
     </script>
 </body>
 </html>
