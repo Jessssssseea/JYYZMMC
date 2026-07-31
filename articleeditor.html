@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF 论文集排版规划工具 v11</title>
+    <title>PDF 论文集排版规划工具</title>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <script src="https://unpkg.com/@pdf-lib/fontkit@1.1.1/dist/fontkit.umd.min.js"></script>
+    <link rel="icon" href="assets/images/pdfeditorlogo.png"/>
     <style>
         :root {
             --bg-color: #f3f4f6;
@@ -16,6 +17,8 @@
             --text-main: #1f2937;
             --text-sub: #6b7280;
             --border-color: #e5e7eb;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -54,6 +57,8 @@
         .btn-secondary:hover { background-color: #4b5563; }
         .btn-success { background-color: #10b981; }
         .btn-success:hover { background-color: #059669; }
+        .btn-danger { background-color: var(--danger); }
+        .btn-danger:hover { background-color: var(--danger-hover); }
         .btn:disabled { background-color: #cbd5e1; cursor: not-allowed; }
 
         #main-container {
@@ -147,6 +152,32 @@
             padding: 2px 4px;
             border-radius: 2px;
             display: inline-block;
+        }
+
+        /* 删除按钮样式 */
+        .delete-btn {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 20px;
+            height: 20px;
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .pdf-card:hover .delete-btn {
+            opacity: 1;
+        }
+        .delete-btn:hover {
+            background-color: var(--danger-hover);
         }
 
         #empty-state {
@@ -257,13 +288,13 @@
         const previewIframe = document.getElementById('pdf-preview-iframe');
 
         function getCache() {
-            try { return JSON.parse(localStorage.getItem('pdf_sort_cache_v10') || '[]'); } catch (e) { return []; }
+            try { return JSON.parse(localStorage.getItem('pdf_sort_cache_v11') || '[]'); } catch (e) { return []; }
         }
 
         function saveCache() {
             try {
                 const cacheData = pdfDataStore.map(d => ({ name: d.name, title: d.customTitle }));
-                localStorage.setItem('pdf_sort_cache_v10', JSON.stringify(cacheData));
+                localStorage.setItem('pdf_sort_cache_v11', JSON.stringify(cacheData));
             } catch (e) { console.warn("缓存保存失败"); }
         }
 
@@ -315,6 +346,7 @@
                             <div class="card-pages">解析中...</div>
                             <div class="card-range" id="range-${tempId}">计算中...</div>
                         </div>
+                        <button class="delete-btn" onclick="deleteDocument('${tempId}')">×</button>
                     </div>
                 `;
 
@@ -357,6 +389,34 @@
             if (!container.sortable) initSortable();
             updatePageNumbers();
             saveCache();
+        }
+
+        function deleteDocument(id) {
+            const card = document.querySelector(`[data-id="${id}"]`);
+            if (!card) return;
+
+            if (confirm(`确定要删除 "${card.querySelector('.card-title').innerText}" 吗？`)) {
+                // 从数据存储中移除
+                pdfDataStore = pdfDataStore.filter(d => d.id !== id);
+                
+                // 从DOM中移除卡片
+                card.remove();
+                
+                // 更新页码和缓存
+                updatePageNumbers();
+                saveCache();
+                
+                // 如果没有文档了，显示空状态
+                if (pdfDataStore.length === 0) {
+                    container.innerHTML = `
+                        <div id="empty-state">
+                            <h2>👆 请选择文件夹、添加文件，或直接拖拽 PDF 到此处</h2>
+                            <p>加载后，你可以拖动卡片调整顺序，双击卡片调用浏览器原生预览。</p>
+                            <p>系统会自动识别页数并实时计算合并后的页码区间。</p>
+                        </div>
+                    `;
+                }
+            }
         }
 
         function saveTitleEdit(id, titleEl) {
@@ -517,7 +577,6 @@
                     const entriesPerPage = 25;
                     const tocPageCount = Math.max(1, Math.ceil(tocEntries.length / entriesPerPage));
 
-                    // 设置边距：左边距、右边距各为1.25英寸（90点），上下为1英寸（72点）
                     const leftMargin = 90;  // 1.25英寸 = 90点
                     const rightMargin = 90; // 1.25英寸 = 90点
                     const topMargin = 72;   // 1英寸 = 72点
@@ -525,7 +584,7 @@
 
                     const tocPages = [];
                     for (let i = 0; i < tocPageCount; i++) {
-                        tocPages.push(mergedPdf.insertPage(i, [595.28, 841.89])); // A4尺寸
+                        tocPages.push(mergedPdf.insertPage(i, [595.28, 841.89]));
                     }
 
                     const fontSize = 12;
@@ -536,10 +595,9 @@
                         let y = page.getHeight() - topMargin - 20;
 
                         if (i === 0) {
-                            // 修正：目录标题居中显示
                             const title = '目 录';
                             const titleWidth = customFont.widthOfTextAtSize(title, 20);
-                            const titleX = (page.getWidth() - titleWidth) / 2; // 居中
+                            const titleX = (page.getWidth() - titleWidth) / 2;
                             page.drawText(title, { 
                                 x: titleX, 
                                 y: y + 10, 
@@ -557,11 +615,9 @@
                             const entry = tocEntries[j];
                             const displayPageNum = entry.pageIndex + tocPageCount + 1;
 
-                            // 截断过长的标题，确保有空间放点号和页码
                             let titleText = entry.title;
                             const pageNumStr = displayPageNum.toString();
                             const pageNumWidth = customFont.widthOfTextAtSize(pageNumStr, fontSize);
-                            // 为页码和点号预留足够空间：页码宽度 + 点号区域至少40个单位 + 两边间距
                             const reservedForRight = pageNumWidth + 50;
                             const maxWidth = page.getWidth() - leftMargin - rightMargin - reservedForRight;
                             while (customFont.widthOfTextAtSize(titleText, fontSize) > maxWidth && titleText.length > 0) {
@@ -569,30 +625,16 @@
                             }
                             if (titleText !== entry.title) titleText += "...";
 
-                            // 重新测量截断后的标题宽度
                             const titleWidth = customFont.widthOfTextAtSize(titleText, fontSize);
-
-                            // 页码固定右对齐位置（考虑右边距）
                             const pageNumX = page.getWidth() - rightMargin - pageNumWidth;
-
-                            // 点号起始位置（标题后留6个单位间距）
                             const dotStartX = leftMargin + titleWidth + 6;
-
-                            // 点号结束位置（页码前留8个单位间距，确保不会侵入页码区域）
                             const dotEndX = pageNumX - 8;
-
-                            // 点号可用宽度
                             const dotAvailableWidth = Math.max(0, dotEndX - dotStartX);
-
-                            // 单个点号单元的宽度（' . ' = 空格+点+空格）
                             const dotUnitStr = ' . ';
                             const dotUnitWidth = customFont.widthOfTextAtSize(dotUnitStr, fontSize);
-
-                            // 精确计算能容纳的点号单元数量
                             const maxDots = dotUnitWidth > 0 ? Math.floor(dotAvailableWidth / dotUnitWidth) : 0;
                             const dotText = dotUnitStr.repeat(Math.max(0, maxDots));
 
-                            // 绘制标题
                             page.drawText(titleText, { 
                                 x: leftMargin, 
                                 y, 
@@ -601,7 +643,6 @@
                                 color: rgb(0.1, 0.1, 0.1) 
                             });
 
-                            // 绘制点号（仅在有点号可绘制时）
                             if (maxDots > 0 && dotText.length > 0) {
                                 page.drawText(dotText, { 
                                     x: dotStartX, 
@@ -612,7 +653,6 @@
                                 });
                             }
 
-                            // 绘制页码（始终固定在右侧）
                             page.drawText(pageNumStr, { 
                                 x: pageNumX, 
                                 y, 
@@ -621,7 +661,6 @@
                                 color: rgb(0.1, 0.1, 0.1) 
                             });
 
-                            // 添加超链接（覆盖整行：从左边距到右边距）
                             const link = mergedPdf.context.obj({
                                 Type: 'Annot',
                                 Subtype: 'Link',
